@@ -1,0 +1,375 @@
+https://msopentech.com/blog/2015/04/16/tutorial-using-ant-and-jenkins-to-automate-the-deployment-of-java-projects-from-the-azure-toolkit-for-eclipse/#
+
+Ant
+Mo nhieu instance cua webdriver, lam sao de lay data tu instance nay sang cho instance kia
+JMeter
+
+Log work http://172.19.7.30/gtc/auth/login?ref=
+http://donkey.cybersoft.vn:8083/proxy.pac
+
+
+6060 IS
+
+SQL migration
+
+HDG-2272: T01-03
+HDG-2275: T02-01
+HDG-2291: T03-03
+HDG-2319: T06-01
+HDG-2339: T07.1-02
+HDG-2928: T66-05
+HDG-2943: T68-02
+HDG-2649: T38-02
+HDG-2425: T11-01
+
+
+
+Can't identify objects in first link, we need to use second link.
+https://gcsjira.cybersoft-vn.com/jira/secure/Dashboard.jspa
+https://gcsjira.cybersoft-vn.com/jira/login.jsp?os_destination=%2Fsecure%2FDashboard.jspa
+
+
+HDG-4351: T09 - 01: Channel Banner "Closed Captioning & Subtitles" 
+HDG-2570: T31-01: Trickplay in Full Screen - SD review buffer 
+HDG-2589: T34-02: Record from Guide 
+Read \\dungdoan0659\DTV Testing\05 Training System\e-Learning\HMC STB HW and models\HMC STB HW and models document
+
+
+
+
+HR2x QT Master test plan
+HDG-4379: T97-15: Enable WebKit iTV feature
+HDG-5351: T97-17: Center Panel: WebKit iTV Provider Services 
+HDG-3524: T110-24: Downrez 1080p Linear 
+HDG-6215: T122.16-03: VOD Type2 - ChUpChDown 
+HDG-4354: T141 - 10: Parental (locked box) 
+HDG-4346: T141 - 02: Info 
+HDG-6437: T170 - 01: [7.1-5] Hot Search 
+HDG-6441: T170 - 05: [R-Cloud.2-11] Search: Celebrity Data table 
+HDG-6444: T170 - 08: [R-Cloud.2-21] Search: Channel 
+
+
+HR2x FR Master test plan
+HDG-1: T03-08: PPV Category Sort 
+HDG-5499: T03-18: Previous Key Controls Video in PIG 
+HDG-2299: T03-11: Jump to selected Date & Time on Guide
+HDG-2306: T04-01: Invoke the Mini Guide - blue button 
+HDG-4770: T140 - 01: External Device Settings 
+HDG-4773: T140 - 04: Power / Poweron / Poweroff keys  
+HDG-4774: T140 - 05: Functional keys (Guide, right, left, up, down, List, Info, Menu, Back, Exit, Select and record) 
+
+
+
+
+\\dungdoan0659\DTV Testing\05 Training System\Internal Training Materials\STB functional areas\SHEF - v1.0
+\\dungdoan0659\DTV Testing\05 Training System\Internal Training Materials\STB functional areas\Parental Control
+\\dungdoan0659\DTV Testing\05 Training System\Internal Training Materials\STB functional areas\VOD
+\\dungdoan0659\DTV Testing\05 Training System\e-Learning\HMC Clients C41_C41W\HMC Clients C41_C41W_v0.3
+
+
+
+
+
+
+HR2x FR Master test plan
+HDG-2310: T05-01: Favorites: Setup Custom 1 
+HDG-1: T05-08: Favorites: Channels I Get
+HDG-2312: T05-03: Change the name of the List. 
+HDG-2314: T05-05: PAGE Up/Down & CHAN Up/Down Custom favorites 
+HDG-2342: T07.1-05: Search screen Key Action  
+
+
+
+\\dungdoan0659\DTV Testing\05 Training System\Internal Training Materials\STB functional areas\Captioning_Subtitling
+\\dungdoan0659\DTV Testing\05 Training System\Internal Training Materials\STB functional areas\Common Sense Media (CSM)
+\\dungdoan0659\DTV Testing\05 Training System\Internal Training Materials\STB functional areas\PIG
+\\dungdoan0659\DTV Testing\05 Training System\Internal Training Materials\STB functional areas\Screen Saver
+\\dungdoan0659\DTV Testing\05 Training System\Internal Training Materials\STB functional areas\Trickplay
+
+
+
+
+
+HDG-2343: T07.1-06: Search sport games with episode names 
+HDG-1: T07.1-07: Tokenizing Search Data 
+HDG-1: T07.2-01: Five Types of Searches That Return Unique List Results 
+HDG-2351: T07.2-02: Smart Search – Different Programs with Same Name Listed Individually 
+HDG-1: T09 - 08: Analog (608) closed captions appear after trickplay 
+HDG-1: T09 - 09: Analog (608) closed captions appear 
+HDG-1: T10-01: AANY 
+HDG-1: T10-02: AALL 
+HDG-1: T10-03: AANY TTITLE 
+HDG-1: T10-04: AALL TTITLE 
+HDG-1: T10-04: AALL TTITLE 
+HDG-1: T10-08: AALL CCHAN 
+HDG-1: T10-14: AALL NNOT 
+
+
+\\dungdoan0659\DTV Testing\05 Training System\e-Learning\Testlink\Testlink for Tester\Testlink For Tester
+
+
+
+http://giaotrinhtiengnhat.com/sach-tieng-nhat/the-hoc-kanji-so-cap.html
+
+
+HDG-1: T11-07: Standby during Guide Acquisition 
+HDG-1: T26-03: View Full-Screen OSD without PIG (other than "Signal Meters") for more than 5 minutes. 
+HDG-1: T26-05: Full screen OSD with PIG changes to full-screen picture after 5 minutes.  
+HDG-1: T27-03: Recording is not allowed when there is no DVR-Subscriber authorization 
+HDG-1: T28-04: Channel 100 and 201 Trickplay 
+HDG-2564: T28-06: Time delayed review buffer while recording 
+HDG-2595: T34-08: With 2 tuners currently recording, playback the front tuner recording 
+HDG-2596: T34-09: With 2 tuners currently recording, playback the back tuner recording 
+HDG-2597: T34-10: Playback and Delete 
+HDG-1: T36-01: Before a parental passcode is set
+HDG-1: T36-02: Lock Now 
+HDG-1: T36-06: Movie Ratings- Playback 
+HDG-1: T36-07: TV Ratings - Playback 
+HDG-1: T36-10: Block chanels 245-300 then lock system. Try tuning to the blocked channels. 
+HDG-2638: T37 - 02: Guide Title broadcasting "Movie"  
+HDG-1: T37 - 07: Guide Search "Channel" 
+HDG-1: T41-01: Schedule future recordings of programs using the guide 
+HDG-1: T43-01: Book future series recordings with Episode Type "First Run" 
+HDG-1: T43-03: Book future series recordings with Episode Type "Both" 
+HDG-1: T43-04: Book a future series recording with a start time extension 
+HDG-1: T43-05: Book a future series recording with a stop time extension 
+HDG-1: T43-07: Book a series from Info: Record Series screen 
+
+
+
+
+
+
+
+
+
+
+
+
+HDG-1: T43-09: Cancel a future single episode in a series booking 
+HDG-1: T43-10: Cancel all future episodes in a series booking 
+HDG-1: T43-13: Cancel a currently recording single episode in a series booking 
+HDG-1: T43-14: Cancel the entire episode in a series booking from a currently recording episode 
+HDG-1: T44-03: Manual Booking Prioritizer 
+HDG-5403: T44-04: Delete shows in Series Manager by pressing RED key 
+HDG-2692: T46-01: Trickplay in Full Screen - SD recording 
+HDG-2694: T46-03: Trickplay in Full Screen - HD recording (A3 MPEG4) 
+HDG-1: T48-03: Partial recording with no previous review buffer 
+
+Selenium WebDriver Introduction (Must Read)
+Selenium WebDriver Installation with eclipse
+Selenium WebDriver script
+
+Introduction to JUnit
+Introduction to TestNG 
+
+password STB
+root
+how42n8
+dtvisgr8
+
+minhql
+
+Gcsvn@123
+/sbin/ifconfig
+
+
+
+upgrade update. client
+http://172.19.7.30/gtc/contribution/post_detail/273
+
+
+
+Learn about different types of waits provided by the WebDriver
+
+
+HMC Lite (DIRECTV2PC)
+
+
+
+
+
+show osd
+tail -f /var/viewer/messages.log | grep osd
+
+
+
+
+
+bonus
+human resource > 
+
+
+{
+  "hold": "keyPress",
+  "key": "exit",
+  "status": {
+    "code": 200,
+    "commandResult": 0,
+    "msg": "OK.",
+    "query": "/remote/processKey?key=exit"
+  }
+}
+
+
+
+
+
+
+
+
+Software tools tool
+\\dungdoan0659\DTV Testing\15 Forms_templates_conventions_tools\Softwares and tools
+
+
+
+
+
+Failed test case
+
+Test Case HDG-1: T43-14: Cancel the entire episode in a series booking from a currently recording episode 
+Steps:
+
+    Tune to a channel with series
+    Press the REC button twice. Verify result #1
+    Select the currently-recording episode from the To Do list,
+    Select the red button
+    The “Now Recording” OSD will be displayed: “This series is already recording. What would you like to do?”
+    Select "Cancel entire series"
+    The delete/keep confirmation OSD will be displayed:” This series has been canceled. Do you want to keep the partial recording?”
+    Select “keep it” Verify results #2 and 3
+
+Expected Results:
+
+    Verify that all recordings are added to the To Do list
+    Exit back to Live TV, then open My Playlist. Verify that the cancelled partial recording was kept.
+    Exit back to Live TV, then open the To Do list.  Verify that the cancelled episode booking no longer appears in the To Do list.
+
+
+
+
+
+
+Test Case HDG-2307: T04-02: Mini Guide - Scroll Up 
+Summary:
+M210_Guide_v1_04_9, section 5.1.1.12 thru 5.1.1.15, 5.1.1.27 thru 5.1.1.32
+Steps:
+With the Mini Guide displayed and current program highlighted,
+Press the Up arrow on the remote. Verify result 1.
+Press CHAN Up. Verify result 1.
+Press CHAN UP a few times and then press SELECT on the highlighted program. Verify result 2.
+
+Expected Results:
+Verify highlight moves up one channel in the miniguide.
+???????????Verify STB tunes to the selected program/ channel and has a/v. Verify miniguide is dismissed.?????????????????
+
+
+
+
+
+
+513
+126
+
+
+
+
+  @Test
+  public void wiki() {
+	  WebDriver firefox = new FirefoxDriver();
+	  String url = "https://en.wikipedia.org/wiki/Main_Page";
+	  firefox.get(url);
+	  WebElement lines = firefox.findElement(By.xpath(".//*[@id='mp-tfa']"));
+	  String text = lines.getText();
+	  System.out.println(text);
+  }
+}
+
+
+
+
+
+
+
+Research below topics
+Test Case Priority in TestNG
+Handling Alerts/popups
+Exception Handling
+Checking visibility of web elements
+
+Execute test scripts
+Read data from excel file, properties file for data driven testing
+Handle alerts, exception
+Check if a web element is displayed/selected/enabled
+Use TestNG to prioritize test cases, set preconditions
+Login gcsjira and create issue
+
+
+
+
+
+
+
+
+
+Load Testing using TestNG
+Use hashmap to store date read from excel file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Working with Ajax controls using Webdriver
+TestNG – Timeout Test
+Creating Keyword & Hybrid Frameworks with Selenium
+
+
+
+
+
+
+
+Using Selenium to compare expected date with actual date after working with Ajax controls
+Using SimpleDateFormat to convert date
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Start test script when Windows starts using batch file
+Schedule test script to be executed at a specific time using Jenkins
+
+
+
+
+
+
