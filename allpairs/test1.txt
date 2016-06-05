@@ -1,0 +1,4 @@
+Browser	OS	Mode
+chrome	Win8	mouse
+IE	Win7	touch
+	Win732bit	

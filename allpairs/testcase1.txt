@@ -1,0 +1,28 @@
+
+TEST CASES
+case	Browser	OS	Mode	pairings
+1	chrome	Win8	mouse	3
+2	IE	Win8	touch	3
+3	chrome	Win7	touch	3
+4	IE	Win7	mouse	3
+5	chrome	Win732bit	mouse	2
+6	IE	Win732bit	touch	2
+
+PAIRING DETAILS
+var1	var2	value1	value2	appearances	cases
+OS	Browser	Win8	chrome	1	1
+OS	Browser	Win8	IE	1	2
+OS	Browser	Win7	chrome	1	3
+OS	Browser	Win7	IE	1	4
+OS	Browser	Win732bit	chrome	1	5
+OS	Browser	Win732bit	IE	1	6
+OS	Mode	Win8	mouse	1	1
+OS	Mode	Win8	touch	1	2
+OS	Mode	Win7	mouse	1	4
+OS	Mode	Win7	touch	1	3
+OS	Mode	Win732bit	mouse	1	5
+OS	Mode	Win732bit	touch	1	6
+Browser	Mode	chrome	mouse	2	1, 5
+Browser	Mode	chrome	touch	1	3
+Browser	Mode	IE	mouse	1	4
+Browser	Mode	IE	touch	2	2, 6
