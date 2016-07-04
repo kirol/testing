@@ -1,3 +1,5 @@
+Test harness is specific and Test framework is generic. For example, a test harness will include the exact information of the test management tool down to the login IDs to be used. A test framework on the other hand, will simply say that a test management tool will do the respective activities.
+
 These tools are mostly used by developers. These two types of tool are grouped together because they are variants of the type of support needed by developers when testing individual components or units of software. A test harness provides stubs and drivers, which are small programs that interact with the software under test (e.g. for testing middleware and embedded software). 
 
 
@@ -59,4 +61,4 @@ Open ButlerTestUtil file. This file contains following code:
     testServer.terminate()
     testServer.wait()
 
-In this case, ButlerTestUtil.py file is a test harness which provides runtests.py a way to start/top server.
+In this case, ButlerTestUtil.py file is a test harness which provides runtests.py a way to start/top server (always start server first then run tests...). Remember that, unit test framework also supports annotations which can be used to run a method before another method... like in above test harness file ButlerTestUtil.py. So you can say test harness is specific and Test framework is generic. Test harness is an implement of test framework.
