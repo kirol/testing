@@ -1,0 +1,2 @@
+Verification: Test software in tester's environment
+Validation: Test software in user's environment
