@@ -1,0 +1,1 @@
+Regression test is a test conducted during system maintenance. When an error is corrected or a part of specifications is modified on an existing system, after checking that the changes were correctly made, this test is used to verify that the change did not affect the parts that were not modified.
