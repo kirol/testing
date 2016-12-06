@@ -1,0 +1,4 @@
+A model is a description of a (part of ) systems written in a well-defined
+language. A well-defined language is a language with well-defined
+form (syntax), and meaning (semantics), which is suitable
+for automated interpretation by a computer.
