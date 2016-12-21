@@ -1,0 +1,1 @@
+It should be clear to you now that the difference between staging and production is that a staging environment is used to mimic production as closely as possible for the purposes of testing.
