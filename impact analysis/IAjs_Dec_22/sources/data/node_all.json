@@ -1,0 +1,206 @@
+{
+    "1": {
+        "type": "Asset",
+        "id": "a",
+        "parent": null,
+        "name": "Test Execution"
+    },
+    "2": {
+        "type": "Asset",
+        "id": 1,
+        "parent": "a",
+        "name": "Stream Live TV"
+    },
+    "3": {
+        "type": "Asset",
+        "id": 2,
+        "parent": "a",
+        "name": "Manual Control"
+    },
+    "4": {
+        "type": "Asset",
+        "id": 3,
+        "parent": "a",
+        "name": "Start/Stop"
+    },
+    "5": {
+        "type": "Asset",
+        "id": 4,
+        "parent": "a",
+        "name": "Test Monitor"
+    },
+    "6": {
+        "type": "Asset",
+        "id": "test_manager",
+        "parent": null,
+        "name": "Test Manager"
+    },
+    "7": {
+        "type": "Asset",
+        "id": "test_run_mgmt",
+        "parent": "test_manager",
+        "name": "Test Run Mgmt"
+    },
+    "8": {
+        "type": "Asset",
+        "id": "test_suite_mgmt",
+        "parent": "test_manager",
+        "name": "Test Suite Mgmt"
+    },
+    "9": {
+        "type": "Asset",
+        "id": "test_case_mgmt",
+        "parent": "test_manager",
+        "name": "Test Case Mgmt"
+    },
+    "10": {
+        "type": "Asset",
+        "id": "ms",
+        "parent": null,
+        "name": "Manual Setup"
+    },
+    "11": {
+        "type": "Asset",
+        "id": "server_config",
+        "parent": "ms",
+        "name": "Server Config"
+    },
+    "12": {
+        "type": "Asset",
+        "id": "stb_config",
+        "parent": "ms",
+        "name": "STB Config"
+    },
+    "13": {
+        "type": "Asset",
+        "id": "cp_config",
+        "parent": "ms",
+        "name": "Channel/Program Config"
+    },
+    "14": {
+        "type": "Asset",
+        "id": "report",
+        "parent": null,
+        "name": "Report"
+    },
+    "15": {
+        "type": "Asset",
+        "id": "test_run_report",
+        "parent": "report",
+        "name": "Test Run Report"
+    },
+    "16": {
+        "type": "Asset",
+        "id": "test_script_report",
+        "parent": "report",
+        "name": "Test Script Report"
+    },
+    "17": {
+        "type": "Liability",
+        "id": "test_controller",
+        "parent": null,
+        "name": "Test Controller"
+    },
+    "18": {
+        "type": "Liability",
+        "id": "test_agent",
+        "parent": null,
+        "name": "Test Agent"
+    },
+    "19": {
+        "type": "Liability",
+        "id": "execution_engine",
+        "parent": null,
+        "name": "Execution Engine"
+    },
+    "20": {
+        "type": "Liability",
+        "id": "control_engine",
+        "parent": null,
+        "name": "Control Engine"
+    },
+    "21": {
+        "type": "Liability",
+        "id": "keycode",
+        "parent": null,
+        "name": "Keycode"
+    },
+    "22": {
+        "type": "Liability",
+        "id": "navigation",
+        "parent": null,
+        "name": "Navigation"
+    },
+    "23": {
+        "type": "Liability",
+        "id": "verification_engine",
+        "parent": null,
+        "name": "Verification Engine"
+    },
+    "24": {
+        "type": "Liability",
+        "id": "av_recognition",
+        "parent": null,
+        "name": "A/V Recognition"
+    },
+    "25": {
+        "type": "Liability",
+        "id": "ui_recognition",
+        "parent": null,
+        "name": "UI Recognition"
+    },
+    "26": {
+        "type": "Liability",
+        "id": "configuration",
+        "parent": null,
+        "name": "Configuration"
+    },
+    "27": {
+        "type": "Liability",
+        "id": "coordinates",
+        "parent": null,
+        "name": "Coordinates"
+    },
+    "28": {
+        "type": "Liability",
+        "id": "specs",
+        "parent": null,
+        "name": "Specs"
+    },
+    "29": {
+        "type": "Liability",
+        "id": "report_api",
+        "parent": null,
+        "name": "Report API"
+    },
+    "30": {
+        "type": "Liability",
+        "id": "library_api",
+        "parent": null,
+        "name": "Library API"
+    },
+    "31": {
+        "type": "Liability",
+        "id": "mysql",
+        "parent": null,
+        "name": "MySQL"
+    },
+    "32": {
+        "id": "test1",
+        "name": "Test New",
+        "parent": null,
+        "type": "Parent"
+    },
+    "33": {
+        "id": "test2222",
+        "name": "test2222",
+        "parent": null,
+        "type": "Parent"
+    },
+    "34": {
+        "id": "test3333",
+        "name": "test333",
+        "parent": null,
+        "type": "Parent"
+    }
+}

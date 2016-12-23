@@ -1,0 +1,196 @@
+<% layout('layout') -%>
+<script type="text/javascript">
+//<!--
+/*Get nodes' IDs*/
+var nodeIDall=[];
+var increase=0;
+function updateNode(){
+	
+	$.when($.getJSON('data/node_all.json')).then(function (node) {
+		//var nodeIDall=[];
+		for (var key in node) {
+		    if (node.hasOwnProperty(key)) {
+		        var item = node[key];
+		        id=item['id'];
+		        name=item['name'];
+		        nodeIDall.push(item);
+		        //alert('id='+id.toString().trim()+' name='+name);
+		        $( ".parentID" ).append("<option value='"+id+"'>"+name+"</option>");
+	        	$( ".linkID" ).append("<option value='"+id+"'>"+name+"</option>");
+		    }
+	   }
+		
+	});	
+}
+updateNode();
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+	
+    $('#createChart').click(function(){
+        //Some code
+        //var data = {};
+        var jsonNode={};
+        var jsonLinks={};
+        jsonNode["id"]=$("#moduleID").val();
+        jsonNode["name"]=$("#moduleNameID").val();
+        jsonNode["parent"]=$("#parentID").val();
+        if ($("#parentID").val()!="null") {
+        	jsonNode["type"]="Child";
+        }else{
+        	jsonNode["type"]="Parent";
+        }
+        var i=0;
+		$("#linkTbody tr").each(function(){
+			var linkTo={};
+			//alert($(this).find('.linkID').val());
+			//alert($(this).find('.source input:checked').val());
+			isSource=$(this).find('.source input:checked').val();
+			if (isSource=="yes"){
+				linkTo["source"]=$("#moduleID").val();
+				linkTo["target"]=$(this).find('.linkID').val();
+			}else{
+				linkTo["source"]=$(this).find('.linkID').val();
+				linkTo["target"]=$("#moduleID").val();
+			}
+			linkTo["value"]=50;
+			jsonLinks[i.toString()]=linkTo;
+			i+=1;
+			
+		});
+		
+    	//alert(JSON.stringify(jsonLinks));
+    	$.ajax({
+    		  type: "POST",
+    		  url: "/process_addnode",
+    		  data: jsonNode
+    	}).done(function(msg) {
+    		  //alert("Data Saved: " + msg);
+    	});
+    	
+    	$.ajax({
+  		  type: "POST",
+  		  url: "/process_addlink",
+  		  data: JSON.stringify(jsonLinks)
+	  	}).done(function(msg) {
+	  		//alert("Data Saved: " + msg);
+	  		//$("#chart").reload();
+	  		 location.reload();
+	  	});
+    	
+    	/* var data={};
+	  	data.node=jsonNode;
+	  	data.links=jsonLinks;
+    	$.ajax({
+    		  type: "POST",
+    		  url: "/process_addmodule",
+    		  contentType: "application/json",
+    		  data: data
+  	  	}).done(function(msg) {
+  	  		  alert("Data Saved: " + msg);
+  	  	}); */
+    });
+    
+    $('#parentID').on('change', function() {
+ 	  	//alert( this.value);
+ 	  	if (this.value.trim()=="null"){
+ 	  		$('.Hidden').show();
+ 	  	}else{
+ 	  		//$('.Hidden').hide();
+ 	  	}
+ 	});
+    
+    $(".addLink").click(function(){
+    	curIndex=++increase;
+    	html='<tr>';
+    	html+='<td><select class="linkID"></select></td>';
+    	html+='<td class="source"><label for="yes">Yes</label><input type="radio" name="Group'+curIndex.toString()+'" id="yes" value="yes" checked="checked"/><label for="no">No</label><input type="radio" name="Group'+curIndex.toString()+'" id="no" value="no" /></td>';
+    	html+='</tr>';
+    	$('#linkTbody').append(html);
+    	$('.linkID')
+		    .empty()
+		;
+    	//alert(JSON.stringify(nodeIDall));
+    	for (idx in nodeIDall){
+    		id=nodeIDall[idx]['id'];
+            name=nodeIDall[idx]['name'];
+            //alert('id='+id.toString().trim()+' name='+name);
+        	$( ".linkID" ).append("<option value='"+id.toString().trim()+"'>"+name+"</option>");
+    		
+    	}
+    	
+    });
+});
+
+
+//-->
+</script>
+<!--  form method="post" action="process_post"-->
+<div >
+	 <table style="width:100%">
+	  <tr>
+	  	<th style="text-align: left">ID</th>
+	    <th style="text-align: left">Module Name</th>
+	    <th style="text-align: left">Parent Module</th>
+	    <th  style="text-align: center" class="Hidden" >Link Info</th>
+	    <th align="center"></th>
+	  </tr>
+	  <tr>
+	    <td valign="top">
+	        <input id="moduleID" type="text" name="moduleid"><br>
+	  	</td>
+	  	<td valign="top">
+	        <input id="moduleNameID" type="text" name="modulename"><br>
+	  	</td>
+	  	<td valign="top">
+	        <select id='parentID' class="parentID">
+	        	<option value="null">null</option>  
+	  		</select>
+	  	</td>
+	  	<td class="Hidden" valign="top">
+	  		<table id="linkTable">
+	  				<tr>
+		  				<th style="text-align: center" class="Hidden" >Link To Module</th>
+		  				<th style="text-align: center" class="Hidden" >Source?</th>
+		  			</tr>
+		  			<tbody id="linkTbody">
+		  				<tr>
+			  				<td>
+			  					<select class="linkID">
+						  		</select>	
+			  				</td>
+			  				<td class="source" >
+						  		<label for="yes">Yes</label> 
+								<input type="radio" name="Group0" id="yes" value="yes" checked="checked"/>
+						        <label for="no">No</label> 
+								<input type="radio" name="Group0" id="no" value="no" />
+						  	</td>
+			  			</tr>
+		  			</tbody>
+	  				
+	  		</table>
+	        
+	  	</td>
+	  	<td valign="top">
+	  		<button class="addLink" type="button">Add link</button>
+	  	</td>
+	  	<!--
+	  		<td>
+	        <select id='moduleType'>        
+		        <option value="Asset">Asset</option>
+		        <option value="Liability">Liability</option>
+	  		</select>
+	  	</td> 
+	  	 -->
+	  	
+	  </tr>
+	</table>
+</div>
+<div>
+	 <button id='createChart' type="button" >Create</button> 
+</div>
+
+<div id="chart" style="height: 100% "></div>
+    <script src="d3.v3.min.js"></script>
+    <script src="bihisankey.js"></script>
+    <script src="allchart.js"></script>
