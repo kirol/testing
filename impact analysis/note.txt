@@ -1,0 +1,10 @@
+Rational Rose
+Attah community
+
+Research link on UML
+Traceability Matrix
+
+
+- Impact Analysis:
+	+ By default using: type of link, how many links
+	+ Define manually: let user define manually which node is more important, is more complex
