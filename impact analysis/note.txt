@@ -12,3 +12,4 @@ Traceability Matrix
 	
 	jripple
 	jquery
+	svg
