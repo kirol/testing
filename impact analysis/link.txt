@@ -1,2 +1,22 @@
 http://essay.utwente.nl/59302/1/scriptie_S_Looman.pdf
 http://www.beworld.org/BE/home/be-resources/
+
+http://www.soyatec.com/euml2/com.soyatec.uml.doc/reverse/dependency/index.html
+http://www.class-visualizer.net/   Class Visualizer 
+
+
+
+
+I was personally a big fan of StarUML version 1.
+
+But since the project became commercial, I switched to another forked project: WhiteStarUML.
+
+In the open source (free) version of StarUML there was no support of Annotations and Generics.
+
+The WhiteStarUML project have the class diagram generation from a Java project with a Reverse Engineering tool. Just follow the menu Tools -> Java 1.5 -> Reverse Engineer...
+
+And the following popup appears to choose your Java code location; It can also ask you to put a Java Profile to your current project and just click Yes.
+http://nclass.sourceforge.net/
+
+
+http://software-talk.org/blog/2014/05/comparison-of-free-uml-tools/
