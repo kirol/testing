@@ -20,3 +20,5 @@ http://nclass.sourceforge.net/
 
 
 http://software-talk.org/blog/2014/05/comparison-of-free-uml-tools/
+
+http://stackoverflow.com/questions/51786/how-to-generate-uml-diagrams-especially-sequence-diagrams-from-java-code
