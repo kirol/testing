@@ -22,3 +22,14 @@ http://nclass.sourceforge.net/
 http://software-talk.org/blog/2014/05/comparison-of-free-uml-tools/
 
 http://stackoverflow.com/questions/51786/how-to-generate-uml-diagrams-especially-sequence-diagrams-from-java-code
+
+https://coderanch.com/wiki/674059/Book-Promotions-Winners
+
+https://www.amazon.com/CS-Detective-Algorithmic-Conspiracy-Computation/dp/1593277490/?tag=crfa12-20
+https://www.amazon.com/Penetration-Testing-Basics-Quick-Start-Breaking/dp/1484218566/?tag=crfa12-20
+http://jd.benow.ca/
+
+
+While the answer of "No" is technically correct based on the phrasing of the question. You may want to read up on AJAX. It is a way for javascript to make a request to your backend code (in this case Java). Javascript is client side, meaning it is run by the user's browser. Java is running on your server. In order for the client side javascript to interact with the backend Java, you need to make a request to the server.
+
+http://stackoverflow.com/questions/26760153/parse-jar-file-and-find-relationships-between-classes
