@@ -56,6 +56,7 @@ public class Sample1
 	// =========================================================================
 	private static final boolean IS_MONITORING = false;
 	private static final String CLASS_TO_ANALYZE = "com.jgoodies.common.collect.ArrayListModel";
+	private static final String JAR_TO_ANALYZE = "example-libs/jgoodies-common-1.8.0.jar";
 
 	// =========================================================================
 	// INSTANCE VARIABLES
@@ -68,27 +69,31 @@ public class Sample1
 	{
 
 
-
-
+		CommandLineArguments commandArgs;
+		commandArgs = new CommandLineArguments(args);
+		String dir = commandArgs.getArgumentValue("-d");
 		ArrayList<String> arr = new ArrayList();
-
-		JarFile jarFile = new JarFile("example-libs/LibraryJTP.jar");
+		
+		JarFile jarFile = new JarFile(dir);
 		Enumeration enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
-			if(processJarFiles(enumeration.nextElement()).endsWith(".class"))
+			String tmpName = processJarFiles(enumeration.nextElement());
+			if(tmpName.endsWith(".class"))
 			{
-				String cname = processJarFiles(enumeration.nextElement()).replace('/', '.');
+				String cname = tmpName.replace("/", ".");
 				String className = cname.replace(".class", "");
 				arr.add(className);
 			}
 		}
+		
+		System.out.println(arr);
 
 
 
 
 
 
-		CommandLineArguments commandArgs;
+		
 		Sample1 inst;
 		List<String> implementArray = new ArrayList<String>();
 		List<String> extendtArray = new ArrayList<String>();
@@ -96,9 +101,9 @@ public class Sample1
 
 
 		inst = new Sample1();
-		/*commandArgs = new CommandLineArguments(args);
-    inst.run(commandArgs);*/
-		inst.run(arr);
+		
+    
+		inst.run(commandArgs, arr,dir);
 
 		System.err.flush();
 		System.out.flush();
@@ -149,12 +154,12 @@ public class Sample1
 
 
 
-	protected void run(ArrayList<String> arr)
+	protected void run(CommandLineArguments commandArgs, ArrayList<String> arr, String dir)
 	{
 		Workset workset;
 		String sample;
 
-
+		System.out.println(commandArgs);
 		JSONObject obj = new JSONObject();
 		obj.put("class","go.GraphLinksModel");
 		obj.put("nodeKeyProperty", "id");
@@ -163,10 +168,10 @@ public class Sample1
 		JSONArray linkArray = new JSONArray();
 
 		// Create a workset with a defined classpath
-		workset = this.createWorkset();
+		workset = this.createWorkset(dir);
 		// Load all elements on the claspath and pre-analyze them (might take a while!)
 		this.initializeWorkset(workset);
-		System.out.println(arr);
+		
 		for(String i : arr){
 			JSONObject obj1 = new JSONObject();
 			obj1.put("category","UndesiredEvent");
@@ -262,7 +267,7 @@ public class Sample1
 		obj.put("linkDataArray", linkArray);
 		
 		/*this.showDependenciesOf(workset, CLASS_TO_ANALYZE);*/
-		try (FileWriter file = new FileWriter("f:\\test.json")) {
+		try (FileWriter file = new FileWriter("views/json/test.json")) {
 
 			file.write(obj.toString());
 			file.flush();
@@ -340,13 +345,13 @@ public class Sample1
 		return a1;
 	}
 
-	protected Workset createWorkset()
+	protected Workset createWorkset(String dir)
 	{
 		Workset workset;
 		workset = new Workset("Sample1");
 		ClasspathPartDefinition partDefinition;
 
-		partDefinition = new ClasspathPartDefinition("example-libs/LibraryJTP.jar");
+		partDefinition = new ClasspathPartDefinition(dir);
 		workset.addClasspathPartDefinition(partDefinition);
 		workset.addIgnoreFilter(new StringFilter("java.*"));
 		workset.addIgnoreFilter(new StringFilter("javax.*"));
