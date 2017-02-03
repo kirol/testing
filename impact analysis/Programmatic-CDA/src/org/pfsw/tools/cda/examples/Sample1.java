@@ -35,11 +35,14 @@ import org.pf.tools.cda.core.init.WorksetInitializer;
 import org.pf.tools.cda.core.processing.IProgressMonitor;
 import org.pf.tools.cda.core.processing.WaitingIElementsProcessingResultHandler;
 import org.pf.util.SysUtil;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.io.File; import java.io.FileWriter; 
-import java.io.IOException; 
+import java.io.IOException;
+import java.nio.charset.Charset;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -104,7 +107,6 @@ public class Sample1
 		
     
 		inst.run(commandArgs, arr,dir);
-
 		System.err.flush();
 		System.out.flush();
 		SysUtil.current().exit(0, 100);
@@ -154,7 +156,7 @@ public class Sample1
 
 
 
-	protected void run(CommandLineArguments commandArgs, ArrayList<String> arr, String dir)
+	protected void run(CommandLineArguments commandArgs, ArrayList<String> arr, String dir) throws IOException
 	{
 		Workset workset;
 		String sample;
@@ -173,6 +175,7 @@ public class Sample1
 		this.initializeWorkset(workset);
 		
 		for(String i : arr){
+			this.createHtmlFile(i, i);
 			JSONObject obj1 = new JSONObject();
 			obj1.put("category","UndesiredEvent");
 			obj1.put("id",i);
@@ -280,7 +283,7 @@ public class Sample1
 
 
 
-	// 
+	// -----------------
 	protected Object[] showDependenciesOf(Workset workset, String className) 
 	{
 		ClassInformation classInfo;
@@ -294,13 +297,13 @@ public class Sample1
 		classInfo = workset.getClassInfo(className);
 
 
-		// Get interfaces which are implemented by current class/interface
+		// Get interfaces which are implemented by current class/interface (Realization)
 		directlyImplemntedInterfaces = classInfo.getDirectlyImplementedInterfaces();
 		List<String> a1 = this.showResult(directlyImplemntedInterfaces);    
 		/*System.out.println("\n\n" + classInfo.getName() + " implements interfaces:");
     System.out.println(a1);*/
 
-		// Get classes which are extended by current class/interface
+		// Get classes which are extended by current class/interface (Generalization)
 		directlyExtendedInterfaces = classInfo.getDirectlyExtendedInterfaces();
 		List<String> a2 = this.showResult(directlyExtendedInterfaces);    
 		/*System.out.println("\n\n" + classInfo.getName() + " extends classes:");
@@ -311,7 +314,7 @@ public class Sample1
 		List<String> a12 = new ArrayList<String>(a1);
 		a12.addAll(a2);
 
-		// Get classes which are used by current class/interface
+		// Get classes which are used by current class/interface (Directed Association)
 		allClasses = classInfo.getReferredClassesArray();
 		List<String> a3 = this.showResult(allClasses); 
 
@@ -377,7 +380,21 @@ public class Sample1
 		// Running with no progress monitor (null) is okay as well.
 		wsInitializer.initializeWorksetAndWait(monitor); 
 	}
-
+	
+	// Create report.html file
+	protected void createHtmlFile(String class1, String class2) throws IOException
+	{
+		File htmlTemplateFile = new File("views/output/template.html");
+		String htmlString = FileUtils.readFileToString(htmlTemplateFile, Charset.forName("UTF-8"));
+		String contents = "<td>" + class1 + "</td>";
+		htmlString = htmlString.replace("$contents", contents);
+		File newHtmlFile = new File("views/output/report.html");
+		FileUtils.writeStringToFile(newHtmlFile, htmlString, Charset.forName("UTF-8"));
+		
+		
+		
+		
+	}
 
 
 

@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/pf-cda-core.jar" sourcepath="/PF-CDA-Core/src/main/java"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.5.jar"/>
 	<classpathentry kind="lib" path="lib/json_simple.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
