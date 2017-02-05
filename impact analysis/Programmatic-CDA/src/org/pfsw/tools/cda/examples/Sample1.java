@@ -174,8 +174,13 @@ public class Sample1
 		// Load all elements on the claspath and pre-analyze them (might take a while!)
 		this.initializeWorkset(workset);
 		
-		for(String i : arr){
-			this.createHtmlFile(i, i);
+		String htmlString1 = new String();
+		
+		for(String i : arr)
+		{
+			
+			String tmpString = "<tr><td>" + i + "</td><td>";
+			htmlString1 = htmlString1 + tmpString;
 			JSONObject obj1 = new JSONObject();
 			obj1.put("category","UndesiredEvent");
 			obj1.put("id",i);
@@ -194,6 +199,8 @@ public class Sample1
 
 			if(list1.isEmpty() == false) {
 				for(String j : list1){
+					String tmpString1 = j + "<br>";
+					htmlString1 = htmlString1 + tmpString1;
 					JSONObject obj2 = new JSONObject();
 					obj2.put("from",i);
 					obj2.put("color","#2F4F4F");
@@ -214,8 +221,12 @@ public class Sample1
 				}
 			}
 			
+			
+			htmlString1 = htmlString1 + "</td><td>";
 			if(list2.isEmpty() == false) {
 				for(String j : list2){
+					String tmpString2 = j + "<br>";
+					htmlString1 = htmlString1 + tmpString2;
 					JSONObject obj2 = new JSONObject();
 					obj2.put("from",i);
 					obj2.put("color","#2F4F4F");
@@ -235,9 +246,11 @@ public class Sample1
 				}
 			}
 			
-			
+			htmlString1 = htmlString1 + "</td><td>";
 			if(list3.isEmpty() == false) {
 				for(String j : list3){
+					String tmpString3 = j + "<br>";
+					htmlString1 = htmlString1 + tmpString3;
 					JSONObject obj2 = new JSONObject();
 					obj2.put("from",i);
 					obj2.put("color","#2F4F4F");
@@ -262,8 +275,10 @@ public class Sample1
             
 			
 
-			/*System.out.println(arr);*/
+			htmlString1 = htmlString1 + "</td></tr>";
 		}
+		
+		this.createHtmlFile(htmlString1);
 		
 		
 		obj.put("nodeDataArray", nodeArray);
@@ -382,11 +397,11 @@ public class Sample1
 	}
 	
 	// Create report.html file
-	protected void createHtmlFile(String class1, String class2) throws IOException
+	protected void createHtmlFile(String class1) throws IOException
 	{
 		File htmlTemplateFile = new File("views/output/template.html");
 		String htmlString = FileUtils.readFileToString(htmlTemplateFile, Charset.forName("UTF-8"));
-		String contents = "<td>" + class1 + "</td>";
+		String contents = class1;
 		htmlString = htmlString.replace("$contents", contents);
 		File newHtmlFile = new File("views/output/report.html");
 		FileUtils.writeStringToFile(newHtmlFile, htmlString, Charset.forName("UTF-8"));
