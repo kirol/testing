@@ -186,7 +186,10 @@ public class Sample1
 			obj1.put("id",i);
 			obj1.put("text",i);
 			obj1.put("color", "lightyellow");
-			nodeArray.add(obj1);
+			
+			if(!nodeArray.contains(obj1)){
+				nodeArray.add(obj1);
+			}
 
 			List<String> list1 = new ArrayList<String>();
 			List<String> list2 = new ArrayList<String>();
@@ -198,21 +201,21 @@ public class Sample1
 			
 
 			if(list1.isEmpty() == false) {
-				for(String j : list1){
-					String tmpString1 = j + "<br>";
+				for(String j1 : list1){
+					String tmpString1 = j1 + "<br>";
 					htmlString1 = htmlString1 + tmpString1;
 					JSONObject obj2 = new JSONObject();
 					obj2.put("from",i);
 					obj2.put("color","#2F4F4F");
 					obj2.put("thick", 1.5);
 					obj2.put("category", "Realization");
-					obj2.put("to", j);
+					obj2.put("to", j1);
 					linkArray.add(obj2);
 					
 					JSONObject obj1_1 = new JSONObject();
 					obj1_1.put("category","UndesiredEvent");
-					obj1_1.put("id",j);
-					obj1_1.put("text",j);
+					obj1_1.put("id",j1);
+					obj1_1.put("text",j1);
 					obj1_1.put("color", "lightyellow");
 					if(!nodeArray.contains(obj1_1)){
 						nodeArray.add(obj1_1);
@@ -373,6 +376,7 @@ public class Sample1
 		workset.addClasspathPartDefinition(partDefinition);
 		workset.addIgnoreFilter(new StringFilter("java.*"));
 		workset.addIgnoreFilter(new StringFilter("javax.*"));
+		workset.addIgnoreFilter(new StringFilter("com.sun.awt.*"));
 		return workset;
 	}
 
