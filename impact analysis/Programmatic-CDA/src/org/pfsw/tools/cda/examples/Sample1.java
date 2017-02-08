@@ -79,8 +79,8 @@ public class Sample1
 		CommandLineArguments commandArgs;
 		commandArgs = new CommandLineArguments(args);
 		String dir = commandArgs.getArgumentValue("-d");
-		ArrayList<String> arr = new ArrayList();
-		
+		Map arr = new HashMap();
+		ArrayList<String> listOfMethods = new ArrayList();
 		JarFile jarFile = new JarFile(dir);
 		Enumeration enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
@@ -99,7 +99,7 @@ public class Sample1
 			{
 				String cname = tmpName.replace("/", ".");
 				String className = cname.replace(".class", "");
-				arr.add(className);
+				
 				
 				
 				ClassNode classNode = new ClassNode();
@@ -111,9 +111,27 @@ public class Sample1
 	            } finally {
 	                classFileInputStream.close();
 	            }
-	            System.out.println(describeClass(classNode));
+	         // The method signatures (e.g. - "public static void main(String[]) throws Exception")
+	    	    @SuppressWarnings("unchecked")
+	    	    List<MethodNode> methodNodes = classNode.methods;
+	    	    
+
+	    	    for (MethodNode methodNode : methodNodes) {
+	    	        String methodDescription = describeMethod(methodNode);
+	    	        
+	    	        listOfMethods.add(methodDescription);
+	    	    }
+	    	    arr.put(className, listOfMethods);
+	    	    
+
+
+
+	    	    
+
+	    	   
 			}
 		}
+		System.out.println(arr);
 		
 		
 
@@ -182,7 +200,7 @@ public class Sample1
 
 
 
-	protected void run(CommandLineArguments commandArgs, ArrayList<String> arr, String dir) throws IOException
+	protected void run(CommandLineArguments commandArgs, Map hm, String dir) throws IOException
 	{
 		Workset workset;
 		String sample;
@@ -201,8 +219,8 @@ public class Sample1
 		this.initializeWorkset(workset);
 		
 		String htmlString1 = new String();
-		
-		for(String i : arr)
+		for(Map.Entry<String, HashMap> entry : selects.entrySet()) {
+		for(Map i : arr)
 		{
 			
 			String tmpString = "<tr><td>" + i + "</td><td>";
@@ -238,14 +256,14 @@ public class Sample1
 					obj2.put("to", j1);
 					linkArray.add(obj2);
 					
-					JSONObject obj1_1 = new JSONObject();
+					/*JSONObject obj1_1 = new JSONObject();
 					obj1_1.put("category","UndesiredEvent");
 					obj1_1.put("id",j1);
 					obj1_1.put("text",j1);
 					obj1_1.put("color", "lightyellow");
 					if(!nodeArray.contains(obj1_1)){
 						nodeArray.add(obj1_1);
-					}
+					}*/
 					
 				}
 			}
@@ -265,14 +283,14 @@ public class Sample1
 					obj2.put("to", j);
 					linkArray.add(obj2);
 					
-					JSONObject obj1_1 = new JSONObject();
+					/*JSONObject obj1_1 = new JSONObject();
 					obj1_1.put("category","UndesiredEvent");
 					obj1_1.put("id",j);
 					obj1_1.put("text",j);
 					obj1_1.put("color", "lightyellow");
 					if(!nodeArray.contains(obj1_1)){
 					nodeArray.add(obj1_1);
-					}
+					}*/
 				}
 			}
 			
@@ -289,14 +307,14 @@ public class Sample1
 					obj2.put("to", j);
 					linkArray.add(obj2);
 					
-					JSONObject obj1_1 = new JSONObject();
+					/*JSONObject obj1_1 = new JSONObject();
 					obj1_1.put("category","UndesiredEvent");
 					obj1_1.put("id",j);
 					obj1_1.put("text",j);
 					obj1_1.put("color", "lightyellow");
 					if(!nodeArray.contains(obj1_1)){
 						nodeArray.add(obj1_1);
-					}
+					}*/
 				}
 			}
 
@@ -441,7 +459,7 @@ public class Sample1
 	}
 	
 	
-	public static String describeClass(ClassNode classNode) {
+	/*public static String describeClass(ClassNode classNode) {
 	    StringBuilder classDescription = new StringBuilder();
 
 	    Type classType = Type.getObjectType(classNode.name);
@@ -490,7 +508,7 @@ public class Sample1
 	    classDescription.append("}\n");
 
 	    return classDescription.toString();
-	}
+	}*/
 	
 	
 	public static String describeMethod(MethodNode methodNode) {
