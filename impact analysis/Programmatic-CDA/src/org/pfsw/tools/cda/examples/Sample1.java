@@ -79,12 +79,12 @@ public class Sample1
 		CommandLineArguments commandArgs;
 		commandArgs = new CommandLineArguments(args);
 		String dir = commandArgs.getArgumentValue("-d");
-		Map arr = new HashMap();
-		ArrayList<String> listOfMethods = new ArrayList();
+		Map<String, ArrayList<String>> arr = new HashMap();
+		
 		JarFile jarFile = new JarFile(dir);
 		Enumeration enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
-			
+			    ArrayList<String> listOfMethods = new ArrayList();
 				JarEntry entry = (JarEntry)enumeration.nextElement();
 				String tmpName = entry.getName();
 		
@@ -200,7 +200,7 @@ public class Sample1
 
 
 
-	protected void run(CommandLineArguments commandArgs, Map hm, String dir) throws IOException
+	protected void run(CommandLineArguments commandArgs, Map<String, ArrayList<String>> arr, String dir) throws IOException
 	{
 		Workset workset;
 		String sample;
@@ -219,9 +219,10 @@ public class Sample1
 		this.initializeWorkset(workset);
 		
 		String htmlString1 = new String();
-		for(Map.Entry<String, HashMap> entry : selects.entrySet()) {
-		for(Map i : arr)
+		for(Map.Entry<String, ArrayList<String>> entry : arr.entrySet()) 
 		{
+			String i = entry.getKey();
+			ArrayList<String> listOfMethodsJson = entry.getValue();
 			
 			String tmpString = "<tr><td>" + i + "</td><td>";
 			htmlString1 = htmlString1 + tmpString;
@@ -230,6 +231,15 @@ public class Sample1
 			obj1.put("id",i);
 			obj1.put("text",i);
 			obj1.put("color", "lightyellow");
+			
+			JSONObject objlistOfMethodsJson = new JSONObject();
+			ArrayList<JSONObject> listOfMethodsTextArray = new ArrayList();
+			for(String ilistOfMethodsJson : listOfMethodsJson){
+				JSONObject iobjlistOfMethodsJson = new JSONObject();
+				iobjlistOfMethodsJson.put("text", ilistOfMethodsJson);
+				listOfMethodsTextArray.add(iobjlistOfMethodsJson);
+			}
+			obj1.put("list2", listOfMethodsTextArray);
 			
 			if(!nodeArray.contains(obj1)){
 				nodeArray.add(obj1);
@@ -326,12 +336,13 @@ public class Sample1
 			htmlString1 = htmlString1 + "</td></tr>";
 		}
 		
-		this.createHtmlFile(htmlString1);
+		
 		
 		obj.put("nodeDataArray", nodeArray);
 		obj.put("linkDataArray", linkArray);
 		
-		/*this.showDependenciesOf(workset, CLASS_TO_ANALYZE);*/
+		this.createHtmlFile(htmlString1);
+		
 		try (FileWriter file = new FileWriter("views/json/test.json")) {
 
 			file.write(obj.toString());
@@ -340,6 +351,8 @@ public class Sample1
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
 
 	}
 
