@@ -17,11 +17,15 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.regex.Pattern;
 import java.io.*;
 import java.util.*;
 import java.util.jar.*;
 import java.util.Arrays;
+import org.objectweb.asm.ClassReader; 
+import org.objectweb.asm.Opcodes; 
+import org.objectweb.asm.Type; 
+import org.objectweb.asm.tree.ClassNode; 
+import org.objectweb.asm.tree.MethodNode; 
 
 import org.pf.text.CommandLineArguments;
 import org.pf.tools.cda.base.model.ClassInformation;
@@ -80,16 +84,38 @@ public class Sample1
 		JarFile jarFile = new JarFile(dir);
 		Enumeration enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
-			String tmpName = processJarFiles(enumeration.nextElement());
+			
+				JarEntry entry = (JarEntry)enumeration.nextElement();
+				String tmpName = entry.getName();
+		
+
+
+				/*long size = entry.getSize();
+			       long compressedSize = entry.getCompressedSize();*/
+
+			
+			
 			if(tmpName.endsWith(".class"))
 			{
 				String cname = tmpName.replace("/", ".");
 				String className = cname.replace(".class", "");
 				arr.add(className);
+				
+				
+				ClassNode classNode = new ClassNode();
+
+	            InputStream classFileInputStream = jarFile.getInputStream(entry);
+	            try {
+	                ClassReader classReader = new ClassReader(classFileInputStream);
+	                classReader.accept(classNode, 0);
+	            } finally {
+	                classFileInputStream.close();
+	            }
+	            System.out.println(describeClass(classNode));
 			}
 		}
 		
-		System.out.println(arr);
+		
 
 
 
@@ -230,6 +256,7 @@ public class Sample1
 				for(String j : list2){
 					String tmpString2 = j + "<br>";
 					htmlString1 = htmlString1 + tmpString2;
+					
 					JSONObject obj2 = new JSONObject();
 					obj2.put("from",i);
 					obj2.put("color","#2F4F4F");
@@ -283,7 +310,6 @@ public class Sample1
 		
 		this.createHtmlFile(htmlString1);
 		
-		
 		obj.put("nodeDataArray", nodeArray);
 		obj.put("linkDataArray", linkArray);
 		
@@ -313,7 +339,7 @@ public class Sample1
 
 		// Lookup the class of interest
 		classInfo = workset.getClassInfo(className);
-
+		
 
 		// Get interfaces which are implemented by current class/interface (Realization)
 		directlyImplemntedInterfaces = classInfo.getDirectlyImplementedInterfaces();
@@ -361,7 +387,6 @@ public class Sample1
 		for (ClassInformation classInformation : resultData)
 		{
 			a1.add(classInformation.getName());
-			/*System.out.print(classInformation.getName());*/
 		}
 		return a1;
 	}
@@ -414,20 +439,126 @@ public class Sample1
 		
 		
 	}
+	
+	
+	public static String describeClass(ClassNode classNode) {
+	    StringBuilder classDescription = new StringBuilder();
+
+	    Type classType = Type.getObjectType(classNode.name);
 
 
 
+	    // The class signature (e.g. - "public class Foo")
+	    if ((classNode.access & Opcodes.ACC_PUBLIC) != 0) {
+	        classDescription.append("public ");
+	    }
 
-	private static String processJarFiles(Object obj) {
-		JarEntry entry = (JarEntry)obj;
-		String name = entry.getName();
-		return name;
+	    if ((classNode.access & Opcodes.ACC_PRIVATE) != 0) {
+	        classDescription.append("private ");
+	    }
+
+	    if ((classNode.access & Opcodes.ACC_PROTECTED) != 0) {
+	        classDescription.append("protected ");
+	    }
+
+	    if ((classNode.access & Opcodes.ACC_ABSTRACT) != 0) {
+	        classDescription.append("abstract ");
+	    }
+
+	    if ((classNode.access & Opcodes.ACC_INTERFACE) != 0) {
+	        classDescription.append("interface ");
+	    } else {
+	        classDescription.append("class ");
+	    }
+
+	    classDescription.append(classType.getClassName()).append("\n");
+	    classDescription.append("{\n");
 
 
-		/*long size = entry.getSize();
-	       long compressedSize = entry.getCompressedSize();*/
 
+	    // The method signatures (e.g. - "public static void main(String[]) throws Exception")
+	    @SuppressWarnings("unchecked")
+	    List<MethodNode> methodNodes = classNode.methods;
+
+	    for (MethodNode methodNode : methodNodes) {
+	        String methodDescription = describeMethod(methodNode);
+	        classDescription.append("\t").append(methodDescription).append("\n");
+	    }
+
+
+
+	    classDescription.append("}\n");
+
+	    return classDescription.toString();
 	}
+	
+	
+	public static String describeMethod(MethodNode methodNode) {
+	    StringBuilder methodDescription = new StringBuilder();
+
+	    Type returnType = Type.getReturnType(methodNode.desc);
+	    Type[] argumentTypes = Type.getArgumentTypes(methodNode.desc);
+
+	    @SuppressWarnings("unchecked")
+	    List<String> thrownInternalClassNames = methodNode.exceptions;
+
+	    if ((methodNode.access & Opcodes.ACC_PUBLIC) != 0) {
+	        methodDescription.append("public ");
+	    }
+
+	    if ((methodNode.access & Opcodes.ACC_PRIVATE) != 0) {
+	        methodDescription.append("private ");
+	    }
+
+	    if ((methodNode.access & Opcodes.ACC_PROTECTED) != 0) {
+	        methodDescription.append("protected ");
+	    }
+
+	    if ((methodNode.access & Opcodes.ACC_STATIC) != 0) {
+	        methodDescription.append("static ");
+	    }
+
+	    if ((methodNode.access & Opcodes.ACC_ABSTRACT) != 0) {
+	        methodDescription.append("abstract ");
+	    }
+
+	    if ((methodNode.access & Opcodes.ACC_SYNCHRONIZED) != 0) {
+	        methodDescription.append("synchronized ");
+	    }
+
+	    methodDescription.append(returnType.getClassName());
+	    methodDescription.append(" ");
+	    methodDescription.append(methodNode.name);
+
+	    methodDescription.append("(");
+	    for (int i = 0; i < argumentTypes.length; i++) {
+	        Type argumentType = argumentTypes[i];
+	        if (i > 0) {
+	            methodDescription.append(", ");
+	        }
+	        methodDescription.append(argumentType.getClassName());
+	    }
+	    methodDescription.append(")");
+
+	    if (!thrownInternalClassNames.isEmpty()) {
+	        methodDescription.append(" throws ");
+	        int i = 0;
+	        for (String thrownInternalClassName : thrownInternalClassNames) {
+	            if (i > 0) {
+	                methodDescription.append(", ");
+	            }
+	            methodDescription.append(Type.getObjectType(thrownInternalClassName).getClassName());
+	            i++;
+	        }
+	    }
+
+	    return methodDescription.toString();
+	}
+
+
+
+
+	
 
 
 

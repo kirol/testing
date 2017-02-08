@@ -33,3 +33,6 @@ http://jd.benow.ca/
 While the answer of "No" is technically correct based on the phrasing of the question. You may want to read up on AJAX. It is a way for javascript to make a request to your backend code (in this case Java). Javascript is client side, meaning it is run by the user's browser. Java is running on your server. In order for the client side javascript to interact with the backend Java, you need to make a request to the server.
 
 http://stackoverflow.com/questions/26760153/parse-jar-file-and-find-relationships-between-classes
+
+
+http://stackoverflow.com/questions/2690118/java-easy-way-to-get-method-stub-out-of-class-files-within-a-jar-file-reflecti
