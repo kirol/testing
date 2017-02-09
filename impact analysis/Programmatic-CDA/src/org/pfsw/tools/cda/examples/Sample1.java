@@ -9,22 +9,20 @@
 // ===========================================================================
 package org.pfsw.tools.cda.examples;
 
-// ===========================================================================
-// IMPORTS
-// ===========================================================================
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.io.*;
+// ===========================================================================
+// IMPORTS
+// ===========================================================================
 import java.util.*;
 import java.util.jar.*;
-import java.util.Arrays;
+
 import org.objectweb.asm.ClassReader; 
 import org.objectweb.asm.Opcodes; 
 import org.objectweb.asm.Type; 
-import org.objectweb.asm.tree.ClassNode; 
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode; 
 
 import org.pf.text.CommandLineArguments;
@@ -79,12 +77,15 @@ public class Sample1
 		CommandLineArguments commandArgs;
 		commandArgs = new CommandLineArguments(args);
 		String dir = commandArgs.getArgumentValue("-d");
-		Map<String, ArrayList<String>> arr = new HashMap();
+		Map<String, HashMap<String, ArrayList<String>>> arr = new HashMap<String, HashMap<String, ArrayList<String>>>();
+		
 		
 		JarFile jarFile = new JarFile(dir);
 		Enumeration enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
 			    ArrayList<String> listOfMethods = new ArrayList();
+			    ArrayList<String> listOfFields = new ArrayList();
+			    HashMap<String, ArrayList<String>> tmparr = new HashMap();
 				JarEntry entry = (JarEntry)enumeration.nextElement();
 				String tmpName = entry.getName();
 		
@@ -115,13 +116,26 @@ public class Sample1
 	    	    @SuppressWarnings("unchecked")
 	    	    List<MethodNode> methodNodes = classNode.methods;
 	    	    
+	    	   
 
 	    	    for (MethodNode methodNode : methodNodes) {
 	    	        String methodDescription = describeMethod(methodNode);
-	    	        
 	    	        listOfMethods.add(methodDescription);
 	    	    }
-	    	    arr.put(className, listOfMethods);
+	    	    
+	    	    
+	    	    
+	    	    List<FieldNode> fieldNodes = classNode.fields;
+	    	    
+	    	    for (FieldNode fieldNode : fieldNodes) {
+	    	        String fieldDescription = describeField(fieldNode);
+	    	        listOfFields.add(fieldDescription);
+	    	    }
+	    	    
+	    	    
+	    	    tmparr.put("list1", listOfFields);
+	    	    tmparr.put("list2", listOfMethods);
+	    	    arr.put(className, tmparr);
 	    	    
 
 
@@ -200,7 +214,7 @@ public class Sample1
 
 
 
-	protected void run(CommandLineArguments commandArgs, Map<String, ArrayList<String>> arr, String dir) throws IOException
+	protected void run(CommandLineArguments commandArgs, Map<String,HashMap<String,ArrayList<String>>> arr, String dir) throws IOException
 	{
 		Workset workset;
 		String sample;
@@ -219,10 +233,17 @@ public class Sample1
 		this.initializeWorkset(workset);
 		
 		String htmlString1 = new String();
-		for(Map.Entry<String, ArrayList<String>> entry : arr.entrySet()) 
+		for(Map.Entry<String,HashMap<String,ArrayList<String>>> entry : arr.entrySet()) 
 		{
 			String i = entry.getKey();
-			ArrayList<String> listOfMethodsJson = entry.getValue();
+			
+			/*HashMap<String,ArrayList<String>> sax = entry.getValue();*/
+			HashMap<String,ArrayList<String>> listOfFieldsAndMethods = entry.getValue();
+			
+			ArrayList<String> listOfMethodsJson = listOfFieldsAndMethods.get("list2");
+			ArrayList<String> listOfFieldsJson = listOfFieldsAndMethods.get("list1");
+			
+			System.out.println(listOfMethodsJson);
 			
 			String tmpString = "<tr><td>" + i + "</td><td>";
 			htmlString1 = htmlString1 + tmpString;
@@ -240,6 +261,17 @@ public class Sample1
 				listOfMethodsTextArray.add(iobjlistOfMethodsJson);
 			}
 			obj1.put("list2", listOfMethodsTextArray);
+			
+			
+			JSONObject objlistOfFieldsJson = new JSONObject();
+			ArrayList<JSONObject> listOfFieldsTextArray = new ArrayList();
+			for(String ilistOfFieldsJson : listOfFieldsJson){
+				JSONObject iobjlistOfFieldsJson = new JSONObject();
+				iobjlistOfFieldsJson.put("text", ilistOfFieldsJson);
+				listOfFieldsTextArray.add(iobjlistOfFieldsJson);
+			}
+			obj1.put("list1", listOfFieldsTextArray);
+			
 			
 			if(!nodeArray.contains(obj1)){
 				nodeArray.add(obj1);
@@ -530,8 +562,8 @@ public class Sample1
 	    Type returnType = Type.getReturnType(methodNode.desc);
 	    Type[] argumentTypes = Type.getArgumentTypes(methodNode.desc);
 
-	    @SuppressWarnings("unchecked")
-	    List<String> thrownInternalClassNames = methodNode.exceptions;
+	    /*@SuppressWarnings("unchecked")
+	    List<String> thrownInternalClassNames = methodNode.exceptions;*/
 
 	    if ((methodNode.access & Opcodes.ACC_PUBLIC) != 0) {
 	        methodDescription.append("public ");
@@ -571,7 +603,7 @@ public class Sample1
 	    }
 	    methodDescription.append(")");
 
-	    if (!thrownInternalClassNames.isEmpty()) {
+	   /* if (!thrownInternalClassNames.isEmpty()) {
 	        methodDescription.append(" throws ");
 	        int i = 0;
 	        for (String thrownInternalClassName : thrownInternalClassNames) {
@@ -581,11 +613,73 @@ public class Sample1
 	            methodDescription.append(Type.getObjectType(thrownInternalClassName).getClassName());
 	            i++;
 	        }
-	    }
+	    }*/
 
 	    return methodDescription.toString();
 	}
 
+	
+	public static String describeField(FieldNode fieldNode) {
+	    StringBuilder fieldDescription = new StringBuilder();
+
+	    Type returnType = Type.getType(fieldNode.desc);
+        
+	    /*@SuppressWarnings("unchecked")
+	    List<String> thrownInternalClassNames = fieldNode.*/
+	    
+
+	    if ((fieldNode.access & Opcodes.ACC_PUBLIC) != 0) {
+	        fieldDescription.append("public ");
+	    }
+
+	    if ((fieldNode.access & Opcodes.ACC_PRIVATE) != 0) {
+	        fieldDescription.append("private ");
+	    }
+
+	    if ((fieldNode.access & Opcodes.ACC_PROTECTED) != 0) {
+	        fieldDescription.append("protected ");
+	    }
+
+	    if ((fieldNode.access & Opcodes.ACC_STATIC) != 0) {
+	        fieldDescription.append("static ");
+	    }
+
+	    if ((fieldNode.access & Opcodes.ACC_ABSTRACT) != 0) {
+	        fieldDescription.append("abstract ");
+	    }
+
+	    if ((fieldNode.access & Opcodes.ACC_SYNCHRONIZED) != 0) {
+	        fieldDescription.append("synchronized ");
+	    }
+
+	    fieldDescription.append(returnType.getClassName());
+	    fieldDescription.append(" ");
+	    fieldDescription.append(fieldNode.name);
+
+	    /*fieldDescription.append("(");
+	    for (int i = 0; i < argumentTypes.length; i++) {
+	        Type argumentType = argumentTypes[i];
+	        if (i > 0) {
+	            fieldDescription.append(", ");
+	        }
+	        fieldDescription.append(argumentType.getClassName());
+	    }
+	    fieldDescription.append(")");*/
+
+	    /*if (!thrownInternalClassNames.isEmpty()) {
+	        fieldDescription.append(" throws ");
+	        int i = 0;
+	        for (String thrownInternalClassName : thrownInternalClassNames) {
+	            if (i > 0) {
+	                fieldDescription.append(", ");
+	            }
+	            fieldDescription.append(Type.getObjectType(thrownInternalClassName).getClassName());
+	            i++;
+	        }
+	    }*/
+
+	    return fieldDescription.toString();
+	}
 
 
 
