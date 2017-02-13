@@ -36,3 +36,5 @@ http://stackoverflow.com/questions/26760153/parse-jar-file-and-find-relationship
 
 
 http://stackoverflow.com/questions/2690118/java-easy-way-to-get-method-stub-out-of-class-files-within-a-jar-file-reflecti
+
+https://cs.gmu.edu/~tr-admin/papers/ISE-TR-99-06.pdf
