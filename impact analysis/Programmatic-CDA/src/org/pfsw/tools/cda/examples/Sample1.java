@@ -18,12 +18,12 @@ import java.io.*;
 import java.util.*;
 import java.util.jar.*;
 
-import org.objectweb.asm.ClassReader; 
-import org.objectweb.asm.Opcodes; 
-import org.objectweb.asm.Type; 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode; 
+import org.objectweb.asm.tree.MethodNode;
 
 import org.pf.text.CommandLineArguments;
 import org.pf.tools.cda.base.model.ClassInformation;
@@ -41,7 +41,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import java.io.File; import java.io.FileWriter; 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -54,8 +55,7 @@ import org.json.simple.JSONObject;
  * @author M.Duchrow
  * @version 1.0
  */
-public class Sample1
-{
+public class Sample1 {
 	// =========================================================================
 	// CONSTANTS
 	// =========================================================================
@@ -70,101 +70,74 @@ public class Sample1
 	// =========================================================================
 	// CLASS METHODS
 	// =========================================================================
-	public static void main(String[] args) throws InterruptedException, IOException
-	{
-
+	public static void main(String[] args) throws InterruptedException, IOException {
 
 		CommandLineArguments commandArgs;
 		commandArgs = new CommandLineArguments(args);
 		String dir = commandArgs.getArgumentValue("-d");
 		Map<String, HashMap<String, ArrayList<String>>> arr = new HashMap<String, HashMap<String, ArrayList<String>>>();
-		
-		
+
 		JarFile jarFile = new JarFile(dir);
 		Enumeration enumeration = jarFile.entries();
 		while (enumeration.hasMoreElements()) {
-			    ArrayList<String> listOfMethods = new ArrayList();
-			    ArrayList<String> listOfFields = new ArrayList();
-			    HashMap<String, ArrayList<String>> tmparr = new HashMap();
-				JarEntry entry = (JarEntry)enumeration.nextElement();
-				String tmpName = entry.getName();
-		
+			ArrayList<String> listOfMethods = new ArrayList<String>();
+			ArrayList<String> listOfFields = new ArrayList<String>();
+			HashMap<String, ArrayList<String>> tmparr = new HashMap<String, ArrayList<String>>();
+			JarEntry entry = (JarEntry) enumeration.nextElement();
+			String tmpName = entry.getName();
+			System.out.println(tmpName);
 
+			/*
+			 * long size = entry.getSize(); long compressedSize =
+			 * entry.getCompressedSize();
+			 */
 
-				/*long size = entry.getSize();
-			       long compressedSize = entry.getCompressedSize();*/
-
-			
-			
-			if(tmpName.endsWith(".class"))
-			{
+			if (tmpName.endsWith(".class")) {
 				String cname = tmpName.replace("/", ".");
 				String className = cname.replace(".class", "");
-				
-				
-				
+
 				ClassNode classNode = new ClassNode();
 
-	            InputStream classFileInputStream = jarFile.getInputStream(entry);
-	            try {
-	                ClassReader classReader = new ClassReader(classFileInputStream);
-	                classReader.accept(classNode, 0);
-	            } finally {
-	                classFileInputStream.close();
-	            }
-	         // The method signatures (e.g. - "public static void main(String[]) throws Exception")
-	    	    @SuppressWarnings("unchecked")
-	    	    List<MethodNode> methodNodes = classNode.methods;
-	    	    
-	    	   
+				InputStream classFileInputStream = jarFile.getInputStream(entry);
+				try {
+					ClassReader classReader = new ClassReader(classFileInputStream);
+					classReader.accept(classNode, 0);
+				} finally {
+					classFileInputStream.close();
+				}
+				// The method signatures (e.g. - "public static void
+				// main(String[]) throws Exception")
+				@SuppressWarnings("unchecked")
+				List<MethodNode> methodNodes = classNode.methods;
 
-	    	    for (MethodNode methodNode : methodNodes) {
-	    	        String methodDescription = describeMethod(methodNode);
-	    	        listOfMethods.add(methodDescription);
-	    	    }
-	    	    
-	    	    
-	    	    
-	    	    List<FieldNode> fieldNodes = classNode.fields;
-	    	    
-	    	    for (FieldNode fieldNode : fieldNodes) {
-	    	        String fieldDescription = describeField(fieldNode);
-	    	        listOfFields.add(fieldDescription);
-	    	    }
-	    	    
-	    	    
-	    	    tmparr.put("list1", listOfFields);
-	    	    tmparr.put("list2", listOfMethods);
-	    	    arr.put(className, tmparr);
-	    	    
+				for (MethodNode methodNode : methodNodes) {
+					String methodDescription = describeMethod(methodNode);
+					listOfMethods.add(methodDescription);
+				}
 
+				List<FieldNode> fieldNodes = classNode.fields;
 
+				for (FieldNode fieldNode : fieldNodes) {
+					String fieldDescription = describeField(fieldNode);
+					listOfFields.add(fieldDescription);
+				}
 
-	    	    
+				tmparr.put("list1", listOfFields);
+				tmparr.put("list2", listOfMethods);
+				arr.put(className, tmparr);
 
-	    	   
 			}
 		}
 		System.out.println(arr);
-		
-		
 
-
-
-
-
-
-		
 		Sample1 inst;
 		List<String> implementArray = new ArrayList<String>();
 		List<String> extendtArray = new ArrayList<String>();
 		List<String> useArray = new ArrayList<String>();
 
-
 		inst = new Sample1();
-		
-    
-		inst.run(commandArgs, arr,dir);
+
+		inst.run(commandArgs, arr, dir);
 		System.err.flush();
 		System.out.flush();
 		SysUtil.current().exit(0, 100);
@@ -173,55 +146,40 @@ public class Sample1
 	// =========================================================================
 	// CONSTRUCTORS
 	// =========================================================================
-	public Sample1()
-	{
+	public Sample1() {
 		super();
-	} 
+	}
 
 	// =========================================================================
 	// PROTECTED INSTANCE METHODS
 	// =========================================================================
-	/*protected void run(CommandLineArguments args)
-  {
-    Workset workset;
-    String sample;
+	/*
+	 * protected void run(CommandLineArguments args) { Workset workset; String
+	 * sample;
+	 * 
+	 * // Create a workset with a defined classpath workset =
+	 * this.createWorkset(); // Load all elements on the claspath and
+	 * pre-analyze them (might take a while!) this.initializeWorkset(workset);
+	 * 
+	 * sample = args.getArgumentValue("-sample");
+	 * 
+	 * if ("1".equals(sample)) { this.showClassesMatching(workset, "F.*r$"); }
+	 * else if ("2".equals(sample)) {
+	 * 
+	 * this.showDependenciesOf(workset, CLASS_TO_ANALYZE); } else if
+	 * ("3".equals(sample)) { this.showAllDependenciesOf(workset,
+	 * CLASS_TO_ANALYZE); } else if ("4".equals(sample)) {
+	 * this.showDependantsOf(workset, CLASS_TO_ANALYZE); } }
+	 */
 
-    // Create a workset with a defined classpath
-    workset = this.createWorkset();
-    // Load all elements on the claspath and pre-analyze them (might take a while!)
-    this.initializeWorkset(workset);
-
-    sample = args.getArgumentValue("-sample");
-
-    if ("1".equals(sample))
-    {
-      this.showClassesMatching(workset, "F.*r$");
-    }
-    else if ("2".equals(sample))
-    {
-
-      this.showDependenciesOf(workset, CLASS_TO_ANALYZE);
-    }
-    else if ("3".equals(sample))
-    {
-      this.showAllDependenciesOf(workset, CLASS_TO_ANALYZE);
-    }
-    else if ("4".equals(sample))
-    {
-      this.showDependantsOf(workset, CLASS_TO_ANALYZE);
-    }
-  }*/
-
-
-
-	protected void run(CommandLineArguments commandArgs, Map<String,HashMap<String,ArrayList<String>>> arr, String dir) throws IOException
-	{
+	protected void run(CommandLineArguments commandArgs, Map<String, HashMap<String, ArrayList<String>>> arr,
+			String dir) throws IOException {
 		Workset workset;
 		String sample;
 
 		System.out.println(commandArgs);
 		JSONObject obj = new JSONObject();
-		obj.put("class","go.GraphLinksModel");
+		obj.put("class", "go.GraphLinksModel");
 		obj.put("nodeKeyProperty", "id");
 
 		JSONArray nodeArray = new JSONArray();
@@ -229,51 +187,49 @@ public class Sample1
 
 		// Create a workset with a defined classpath
 		workset = this.createWorkset(dir);
-		// Load all elements on the claspath and pre-analyze them (might take a while!)
+		// Load all elements on the claspath and pre-analyze them (might take a
+		// while!)
 		this.initializeWorkset(workset);
-		
+
 		String htmlString1 = new String();
-		for(Map.Entry<String,HashMap<String,ArrayList<String>>> entry : arr.entrySet()) 
-		{
+		for (Map.Entry<String, HashMap<String, ArrayList<String>>> entry : arr.entrySet()) {
 			String i = entry.getKey();
-			
-			/*HashMap<String,ArrayList<String>> sax = entry.getValue();*/
-			HashMap<String,ArrayList<String>> listOfFieldsAndMethods = entry.getValue();
-			
+
+			/* HashMap<String,ArrayList<String>> sax = entry.getValue(); */
+			HashMap<String, ArrayList<String>> listOfFieldsAndMethods = entry.getValue();
+
 			ArrayList<String> listOfMethodsJson = listOfFieldsAndMethods.get("list2");
 			ArrayList<String> listOfFieldsJson = listOfFieldsAndMethods.get("list1");
-			
+
 			System.out.println(listOfMethodsJson);
-			
+
 			String tmpString = "<tr><td>" + i + "</td><td>";
 			htmlString1 = htmlString1 + tmpString;
 			JSONObject obj1 = new JSONObject();
-			obj1.put("category","UndesiredEvent");
-			obj1.put("id",i);
-			obj1.put("text",i);
+			obj1.put("category", "UndesiredEvent");
+			obj1.put("id", i);
+			obj1.put("text", i);
 			obj1.put("color", "lightyellow");
-			
+
 			JSONObject objlistOfMethodsJson = new JSONObject();
-			ArrayList<JSONObject> listOfMethodsTextArray = new ArrayList();
-			for(String ilistOfMethodsJson : listOfMethodsJson){
+			List<JSONObject> listOfMethodsTextArray = new ArrayList<>();
+			for (String ilistOfMethodsJson : listOfMethodsJson) {
 				JSONObject iobjlistOfMethodsJson = new JSONObject();
 				iobjlistOfMethodsJson.put("text", ilistOfMethodsJson);
 				listOfMethodsTextArray.add(iobjlistOfMethodsJson);
 			}
 			obj1.put("list2", listOfMethodsTextArray);
-			
-			
+
 			JSONObject objlistOfFieldsJson = new JSONObject();
-			ArrayList<JSONObject> listOfFieldsTextArray = new ArrayList();
-			for(String ilistOfFieldsJson : listOfFieldsJson){
+			List<JSONObject> listOfFieldsTextArray = new ArrayList<>();
+			for (String ilistOfFieldsJson : listOfFieldsJson) {
 				JSONObject iobjlistOfFieldsJson = new JSONObject();
 				iobjlistOfFieldsJson.put("text", ilistOfFieldsJson);
 				listOfFieldsTextArray.add(iobjlistOfFieldsJson);
 			}
 			obj1.put("list1", listOfFieldsTextArray);
-			
-			
-			if(!nodeArray.contains(obj1)){
+
+			if (!nodeArray.contains(obj1)) {
 				nodeArray.add(obj1);
 			}
 
@@ -281,100 +237,88 @@ public class Sample1
 			List<String> list2 = new ArrayList<String>();
 			List<String> list3 = new ArrayList<String>();
 			Object[] listOfArrays = this.showDependenciesOf(workset, i);
-			list1 = (List<String>)listOfArrays[0];
-			list2 = (List<String>)listOfArrays[1];
-			list3 = (List<String>)listOfArrays[2];
-			
+			list1 = (List<String>) listOfArrays[0];
+			list2 = (List<String>) listOfArrays[1];
+			list3 = (List<String>) listOfArrays[2];
 
-			if(list1.isEmpty() == false) {
-				for(String j1 : list1){
+			if (list1.isEmpty() == false) {
+				for (String j1 : list1) {
 					String tmpString1 = j1 + "<br>";
 					htmlString1 = htmlString1 + tmpString1;
 					JSONObject obj2 = new JSONObject();
-					obj2.put("from",i);
-					obj2.put("color","#2F4F4F");
+					obj2.put("from", i);
+					obj2.put("color", "#2F4F4F");
 					obj2.put("thick", 1.5);
 					obj2.put("category", "Realization");
 					obj2.put("to", j1);
 					linkArray.add(obj2);
-					
-					/*JSONObject obj1_1 = new JSONObject();
-					obj1_1.put("category","UndesiredEvent");
-					obj1_1.put("id",j1);
-					obj1_1.put("text",j1);
-					obj1_1.put("color", "lightyellow");
-					if(!nodeArray.contains(obj1_1)){
-						nodeArray.add(obj1_1);
-					}*/
-					
+
+					/*
+					 * JSONObject obj1_1 = new JSONObject();
+					 * obj1_1.put("category","UndesiredEvent");
+					 * obj1_1.put("id",j1); obj1_1.put("text",j1);
+					 * obj1_1.put("color", "lightyellow");
+					 * if(!nodeArray.contains(obj1_1)){ nodeArray.add(obj1_1); }
+					 */
+
 				}
 			}
-			
-			
+
 			htmlString1 = htmlString1 + "</td><td>";
-			if(list2.isEmpty() == false) {
-				for(String j : list2){
+			if (list2.isEmpty() == false) {
+				for (String j : list2) {
 					String tmpString2 = j + "<br>";
 					htmlString1 = htmlString1 + tmpString2;
-					
+
 					JSONObject obj2 = new JSONObject();
-					obj2.put("from",i);
-					obj2.put("color","#2F4F4F");
+					obj2.put("from", i);
+					obj2.put("color", "#2F4F4F");
 					obj2.put("thick", 1.5);
 					obj2.put("category", "Generalization");
 					obj2.put("to", j);
 					linkArray.add(obj2);
-					
-					/*JSONObject obj1_1 = new JSONObject();
-					obj1_1.put("category","UndesiredEvent");
-					obj1_1.put("id",j);
-					obj1_1.put("text",j);
-					obj1_1.put("color", "lightyellow");
-					if(!nodeArray.contains(obj1_1)){
-					nodeArray.add(obj1_1);
-					}*/
+
+					/*
+					 * JSONObject obj1_1 = new JSONObject();
+					 * obj1_1.put("category","UndesiredEvent");
+					 * obj1_1.put("id",j); obj1_1.put("text",j);
+					 * obj1_1.put("color", "lightyellow");
+					 * if(!nodeArray.contains(obj1_1)){ nodeArray.add(obj1_1); }
+					 */
 				}
 			}
-			
+
 			htmlString1 = htmlString1 + "</td><td>";
-			if(list3.isEmpty() == false) {
-				for(String j : list3){
+			if (list3.isEmpty() == false) {
+				for (String j : list3) {
 					String tmpString3 = j + "<br>";
 					htmlString1 = htmlString1 + tmpString3;
 					JSONObject obj2 = new JSONObject();
-					obj2.put("from",i);
-					obj2.put("color","#2F4F4F");
+					obj2.put("from", i);
+					obj2.put("color", "#2F4F4F");
 					obj2.put("thick", 1.5);
 					obj2.put("category", "DirectedAssociation");
 					obj2.put("to", j);
 					linkArray.add(obj2);
-					
-					/*JSONObject obj1_1 = new JSONObject();
-					obj1_1.put("category","UndesiredEvent");
-					obj1_1.put("id",j);
-					obj1_1.put("text",j);
-					obj1_1.put("color", "lightyellow");
-					if(!nodeArray.contains(obj1_1)){
-						nodeArray.add(obj1_1);
-					}*/
+
+					/*
+					 * JSONObject obj1_1 = new JSONObject();
+					 * obj1_1.put("category","UndesiredEvent");
+					 * obj1_1.put("id",j); obj1_1.put("text",j);
+					 * obj1_1.put("color", "lightyellow");
+					 * if(!nodeArray.contains(obj1_1)){ nodeArray.add(obj1_1); }
+					 */
 				}
 			}
 
-
-
-            
-			
-
 			htmlString1 = htmlString1 + "</td></tr>";
 		}
-		
-		
-		
+
 		obj.put("nodeDataArray", nodeArray);
 		obj.put("linkDataArray", linkArray);
-		
+
 		this.createHtmlFile(htmlString1);
-		
+
 		try (FileWriter file = new FileWriter("views/json/test.json")) {
 
 			file.write(obj.toString());
@@ -383,16 +327,11 @@ public class Sample1
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
 
 	}
 
-
-
 	// -----------------
-	protected Object[] showDependenciesOf(Workset workset, String className) 
-	{
+	protected Object[] showDependenciesOf(Workset workset, String className) {
 		ClassInformation classInfo;
 		ClassInformation[] allClasses;
 		ClassInformation[] directlyUseClasses;
@@ -402,60 +341,62 @@ public class Sample1
 
 		// Lookup the class of interest
 		classInfo = workset.getClassInfo(className);
-		
 
-		// Get interfaces which are implemented by current class/interface (Realization)
+		// Get interfaces which are implemented by current class/interface
+		// (Realization)
 		directlyImplemntedInterfaces = classInfo.getDirectlyImplementedInterfaces();
-		List<String> a1 = this.showResult(directlyImplemntedInterfaces);    
-		/*System.out.println("\n\n" + classInfo.getName() + " implements interfaces:");
-    System.out.println(a1);*/
+		List<String> a1 = this.showResult(directlyImplemntedInterfaces);
+		/*
+		 * System.out.println("\n\n" + classInfo.getName() +
+		 * " implements interfaces:"); System.out.println(a1);
+		 */
 
-		// Get classes which are extended by current class/interface (Generalization)
+		// Get classes which are extended by current class/interface
+		// (Generalization)
 		directlyExtendedInterfaces = classInfo.getDirectlyExtendedInterfaces();
-		List<String> a2 = this.showResult(directlyExtendedInterfaces);    
-		/*System.out.println("\n\n" + classInfo.getName() + " extends classes:");
-    System.out.println(a2);*/
-
+		List<String> a2 = this.showResult(directlyExtendedInterfaces);
+		/*
+		 * System.out.println("\n\n" + classInfo.getName() +
+		 * " extends classes:"); System.out.println(a2);
+		 */
 
 		// Combine two arrays
 		List<String> a12 = new ArrayList<String>(a1);
 		a12.addAll(a2);
 
-		// Get classes which are used by current class/interface (Directed Association)
+		// Get classes which are used by current class/interface (Directed
+		// Association)
 		allClasses = classInfo.getReferredClassesArray();
-		List<String> a3 = this.showResult(allClasses); 
+		List<String> a3 = this.showResult(allClasses);
 
 		// Get unique values
 		List<String> duplicateList = new ArrayList<String>();
 		List<String> uniqueList = new ArrayList<String>();
-		for(String item : a3) {
-			if(a12.contains(item)){
+		for (String item : a3) {
+			if (a12.contains(item)) {
 				duplicateList.add(item);
-			}else{
+			} else {
 				uniqueList.add(item);
 			}
 		}
-		/*System.out.println("\n\n" + classInfo.getName() + " uses classes:");
-    System.out.println(uniqueList);*/
+		/*
+		 * System.out.println("\n\n" + classInfo.getName() + " uses classes:");
+		 * System.out.println(uniqueList);
+		 */
 
-		return new Object[]{a1,a2,uniqueList};
+		return new Object[] { a1, a2, uniqueList };
 
 	}
 
-
-
-	protected List<String> showResult(ClassInformation[] resultData)
-	{
+	protected List<String> showResult(ClassInformation[] resultData) {
 		List<String> a1 = new ArrayList<String>();
-		for (ClassInformation classInformation : resultData)
-		{
+		for (ClassInformation classInformation : resultData) {
 			a1.add(classInformation.getName());
 		}
 		return a1;
 	}
 
-	protected Workset createWorkset(String dir)
-	{
+	protected Workset createWorkset(String dir) {
 		Workset workset;
 		workset = new Workset("Sample1");
 		ClasspathPartDefinition partDefinition;
@@ -468,224 +409,194 @@ public class Sample1
 		return workset;
 	}
 
-
-
-
-
-	protected void initializeWorkset(Workset workset)
-	{
+	protected void initializeWorkset(Workset workset) {
 		WorksetInitializer wsInitializer;
 		IProgressMonitor monitor = null;
 
-		if (IS_MONITORING)
-		{      
+		if (IS_MONITORING) {
 			monitor = new ConsoleMonitor();
 		}
 
 		wsInitializer = new WorksetInitializer(workset);
 
 		// Running with no progress monitor (null) is okay as well.
-		wsInitializer.initializeWorksetAndWait(monitor); 
+		wsInitializer.initializeWorksetAndWait(monitor);
 	}
-	
+
 	// Create report.html file
-	protected void createHtmlFile(String class1) throws IOException
-	{
+	protected void createHtmlFile(String class1) throws IOException {
 		File htmlTemplateFile = new File("views/output/template.html");
 		String htmlString = FileUtils.readFileToString(htmlTemplateFile, Charset.forName("UTF-8"));
 		String contents = class1;
 		htmlString = htmlString.replace("$contents", contents);
 		File newHtmlFile = new File("views/output/report.html");
 		FileUtils.writeStringToFile(newHtmlFile, htmlString, Charset.forName("UTF-8"));
-		
-		
-		
-		
+
 	}
-	
-	
-	/*public static String describeClass(ClassNode classNode) {
-	    StringBuilder classDescription = new StringBuilder();
 
-	    Type classType = Type.getObjectType(classNode.name);
+	/*
+	 * public static String describeClass(ClassNode classNode) { StringBuilder
+	 * classDescription = new StringBuilder();
+	 * 
+	 * Type classType = Type.getObjectType(classNode.name);
+	 * 
+	 * 
+	 * 
+	 * // The class signature (e.g. - "public class Foo") if ((classNode.access
+	 * & Opcodes.ACC_PUBLIC) != 0) { classDescription.append("public "); }
+	 * 
+	 * if ((classNode.access & Opcodes.ACC_PRIVATE) != 0) {
+	 * classDescription.append("private "); }
+	 * 
+	 * if ((classNode.access & Opcodes.ACC_PROTECTED) != 0) {
+	 * classDescription.append("protected "); }
+	 * 
+	 * if ((classNode.access & Opcodes.ACC_ABSTRACT) != 0) {
+	 * classDescription.append("abstract "); }
+	 * 
+	 * if ((classNode.access & Opcodes.ACC_INTERFACE) != 0) {
+	 * classDescription.append("interface "); } else {
+	 * classDescription.append("class "); }
+	 * 
+	 * classDescription.append(classType.getClassName()).append("\n");
+	 * classDescription.append("{\n");
+	 * 
+	 * 
+	 * 
+	 * // The method signatures (e.g. -
+	 * "public static void main(String[]) throws Exception")
+	 * 
+	 * @SuppressWarnings("unchecked") List<MethodNode> methodNodes =
+	 * classNode.methods;
+	 * 
+	 * for (MethodNode methodNode : methodNodes) { String methodDescription =
+	 * describeMethod(methodNode);
+	 * classDescription.append("\t").append(methodDescription).append("\n"); }
+	 * 
+	 * 
+	 * 
+	 * classDescription.append("}\n");
+	 * 
+	 * return classDescription.toString(); }
+	 */
 
-
-
-	    // The class signature (e.g. - "public class Foo")
-	    if ((classNode.access & Opcodes.ACC_PUBLIC) != 0) {
-	        classDescription.append("public ");
-	    }
-
-	    if ((classNode.access & Opcodes.ACC_PRIVATE) != 0) {
-	        classDescription.append("private ");
-	    }
-
-	    if ((classNode.access & Opcodes.ACC_PROTECTED) != 0) {
-	        classDescription.append("protected ");
-	    }
-
-	    if ((classNode.access & Opcodes.ACC_ABSTRACT) != 0) {
-	        classDescription.append("abstract ");
-	    }
-
-	    if ((classNode.access & Opcodes.ACC_INTERFACE) != 0) {
-	        classDescription.append("interface ");
-	    } else {
-	        classDescription.append("class ");
-	    }
-
-	    classDescription.append(classType.getClassName()).append("\n");
-	    classDescription.append("{\n");
-
-
-
-	    // The method signatures (e.g. - "public static void main(String[]) throws Exception")
-	    @SuppressWarnings("unchecked")
-	    List<MethodNode> methodNodes = classNode.methods;
-
-	    for (MethodNode methodNode : methodNodes) {
-	        String methodDescription = describeMethod(methodNode);
-	        classDescription.append("\t").append(methodDescription).append("\n");
-	    }
-
-
-
-	    classDescription.append("}\n");
-
-	    return classDescription.toString();
-	}*/
-	
-	
 	public static String describeMethod(MethodNode methodNode) {
-	    StringBuilder methodDescription = new StringBuilder();
+		StringBuilder methodDescription = new StringBuilder();
 
-	    Type returnType = Type.getReturnType(methodNode.desc);
-	    Type[] argumentTypes = Type.getArgumentTypes(methodNode.desc);
+		Type returnType = Type.getReturnType(methodNode.desc);
+		Type[] argumentTypes = Type.getArgumentTypes(methodNode.desc);
 
-	    /*@SuppressWarnings("unchecked")
-	    List<String> thrownInternalClassNames = methodNode.exceptions;*/
+		/*
+		 * @SuppressWarnings("unchecked") List<String> thrownInternalClassNames
+		 * = methodNode.exceptions;
+		 */
 
-	    if ((methodNode.access & Opcodes.ACC_PUBLIC) != 0) {
-	        methodDescription.append("public ");
-	    }
+		if ((methodNode.access & Opcodes.ACC_PUBLIC) != 0) {
+			methodDescription.append("public ");
+		}
 
-	    if ((methodNode.access & Opcodes.ACC_PRIVATE) != 0) {
-	        methodDescription.append("private ");
-	    }
+		if ((methodNode.access & Opcodes.ACC_PRIVATE) != 0) {
+			methodDescription.append("private ");
+		}
 
-	    if ((methodNode.access & Opcodes.ACC_PROTECTED) != 0) {
-	        methodDescription.append("protected ");
-	    }
+		if ((methodNode.access & Opcodes.ACC_PROTECTED) != 0) {
+			methodDescription.append("protected ");
+		}
 
-	    if ((methodNode.access & Opcodes.ACC_STATIC) != 0) {
-	        methodDescription.append("static ");
-	    }
+		if ((methodNode.access & Opcodes.ACC_STATIC) != 0) {
+			methodDescription.append("static ");
+		}
 
-	    if ((methodNode.access & Opcodes.ACC_ABSTRACT) != 0) {
-	        methodDescription.append("abstract ");
-	    }
+		if ((methodNode.access & Opcodes.ACC_ABSTRACT) != 0) {
+			methodDescription.append("abstract ");
+		}
 
-	    if ((methodNode.access & Opcodes.ACC_SYNCHRONIZED) != 0) {
-	        methodDescription.append("synchronized ");
-	    }
+		if ((methodNode.access & Opcodes.ACC_SYNCHRONIZED) != 0) {
+			methodDescription.append("synchronized ");
+		}
 
-	    methodDescription.append(returnType.getClassName());
-	    methodDescription.append(" ");
-	    methodDescription.append(methodNode.name);
+		methodDescription.append(returnType.getClassName());
+		methodDescription.append(" ");
+		methodDescription.append(methodNode.name);
 
-	    methodDescription.append("(");
-	    for (int i = 0; i < argumentTypes.length; i++) {
-	        Type argumentType = argumentTypes[i];
-	        if (i > 0) {
-	            methodDescription.append(", ");
-	        }
-	        methodDescription.append(argumentType.getClassName());
-	    }
-	    methodDescription.append(")");
+		methodDescription.append("(");
+		for (int i = 0; i < argumentTypes.length; i++) {
+			Type argumentType = argumentTypes[i];
+			if (i > 0) {
+				methodDescription.append(", ");
+			}
+			methodDescription.append(argumentType.getClassName());
+		}
+		methodDescription.append(")");
 
-	   /* if (!thrownInternalClassNames.isEmpty()) {
-	        methodDescription.append(" throws ");
-	        int i = 0;
-	        for (String thrownInternalClassName : thrownInternalClassNames) {
-	            if (i > 0) {
-	                methodDescription.append(", ");
-	            }
-	            methodDescription.append(Type.getObjectType(thrownInternalClassName).getClassName());
-	            i++;
-	        }
-	    }*/
+		/*
+		 * if (!thrownInternalClassNames.isEmpty()) {
+		 * methodDescription.append(" throws "); int i = 0; for (String
+		 * thrownInternalClassName : thrownInternalClassNames) { if (i > 0) {
+		 * methodDescription.append(", "); }
+		 * methodDescription.append(Type.getObjectType(thrownInternalClassName).
+		 * getClassName()); i++; } }
+		 */
 
-	    return methodDescription.toString();
+		return methodDescription.toString();
 	}
 
-	
 	public static String describeField(FieldNode fieldNode) {
-	    StringBuilder fieldDescription = new StringBuilder();
+		StringBuilder fieldDescription = new StringBuilder();
 
-	    Type returnType = Type.getType(fieldNode.desc);
-        
-	    /*@SuppressWarnings("unchecked")
-	    List<String> thrownInternalClassNames = fieldNode.*/
-	    
+		Type returnType = Type.getType(fieldNode.desc);
 
-	    if ((fieldNode.access & Opcodes.ACC_PUBLIC) != 0) {
-	        fieldDescription.append("public ");
-	    }
+		/*
+		 * @SuppressWarnings("unchecked") List<String> thrownInternalClassNames
+		 * = fieldNode.
+		 */
 
-	    if ((fieldNode.access & Opcodes.ACC_PRIVATE) != 0) {
-	        fieldDescription.append("private ");
-	    }
+		if ((fieldNode.access & Opcodes.ACC_PUBLIC) != 0) {
+			fieldDescription.append("public ");
+		}
 
-	    if ((fieldNode.access & Opcodes.ACC_PROTECTED) != 0) {
-	        fieldDescription.append("protected ");
-	    }
+		if ((fieldNode.access & Opcodes.ACC_PRIVATE) != 0) {
+			fieldDescription.append("private ");
+		}
 
-	    if ((fieldNode.access & Opcodes.ACC_STATIC) != 0) {
-	        fieldDescription.append("static ");
-	    }
+		if ((fieldNode.access & Opcodes.ACC_PROTECTED) != 0) {
+			fieldDescription.append("protected ");
+		}
 
-	    if ((fieldNode.access & Opcodes.ACC_ABSTRACT) != 0) {
-	        fieldDescription.append("abstract ");
-	    }
+		if ((fieldNode.access & Opcodes.ACC_STATIC) != 0) {
+			fieldDescription.append("static ");
+		}
 
-	    if ((fieldNode.access & Opcodes.ACC_SYNCHRONIZED) != 0) {
-	        fieldDescription.append("synchronized ");
-	    }
+		if ((fieldNode.access & Opcodes.ACC_ABSTRACT) != 0) {
+			fieldDescription.append("abstract ");
+		}
 
-	    fieldDescription.append(returnType.getClassName());
-	    fieldDescription.append(" ");
-	    fieldDescription.append(fieldNode.name);
+		if ((fieldNode.access & Opcodes.ACC_SYNCHRONIZED) != 0) {
+			fieldDescription.append("synchronized ");
+		}
 
-	    /*fieldDescription.append("(");
-	    for (int i = 0; i < argumentTypes.length; i++) {
-	        Type argumentType = argumentTypes[i];
-	        if (i > 0) {
-	            fieldDescription.append(", ");
-	        }
-	        fieldDescription.append(argumentType.getClassName());
-	    }
-	    fieldDescription.append(")");*/
+		fieldDescription.append(returnType.getClassName());
+		fieldDescription.append(" ");
+		fieldDescription.append(fieldNode.name);
 
-	    /*if (!thrownInternalClassNames.isEmpty()) {
-	        fieldDescription.append(" throws ");
-	        int i = 0;
-	        for (String thrownInternalClassName : thrownInternalClassNames) {
-	            if (i > 0) {
-	                fieldDescription.append(", ");
-	            }
-	            fieldDescription.append(Type.getObjectType(thrownInternalClassName).getClassName());
-	            i++;
-	        }
-	    }*/
+		/*
+		 * fieldDescription.append("("); for (int i = 0; i <
+		 * argumentTypes.length; i++) { Type argumentType = argumentTypes[i]; if
+		 * (i > 0) { fieldDescription.append(", "); }
+		 * fieldDescription.append(argumentType.getClassName()); }
+		 * fieldDescription.append(")");
+		 */
 
-	    return fieldDescription.toString();
+		/*
+		 * if (!thrownInternalClassNames.isEmpty()) {
+		 * fieldDescription.append(" throws "); int i = 0; for (String
+		 * thrownInternalClassName : thrownInternalClassNames) { if (i > 0) {
+		 * fieldDescription.append(", "); }
+		 * fieldDescription.append(Type.getObjectType(thrownInternalClassName).
+		 * getClassName()); i++; } }
+		 */
+
+		return fieldDescription.toString();
 	}
-
-
-
-	
-
-
-
 
 }
