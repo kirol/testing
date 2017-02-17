@@ -26,7 +26,10 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import org.pf.text.CommandLineArguments;
+import org.pf.tools.cda.base.model.ClassContainer;
 import org.pf.tools.cda.base.model.ClassInformation;
+import org.pf.tools.cda.base.model.ClassPackage;
+import org.pf.tools.cda.base.model.GenericClassContainer;
 import org.pf.tools.cda.base.model.IAnalyzableElement;
 import org.pf.tools.cda.base.model.Workset;
 import org.pf.tools.cda.base.model.util.StringFilter;
@@ -37,6 +40,7 @@ import org.pf.tools.cda.core.init.WorksetInitializer;
 import org.pf.tools.cda.core.processing.IProgressMonitor;
 import org.pf.tools.cda.core.processing.WaitingIElementsProcessingResultHandler;
 import org.pf.util.SysUtil;
+import org.pfsw.odem.IContainer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.simple.JSONArray;
@@ -85,7 +89,6 @@ public class Sample1 {
 			HashMap<String, ArrayList<String>> tmparr = new HashMap<String, ArrayList<String>>();
 			JarEntry entry = (JarEntry) enumeration.nextElement();
 			String tmpName = entry.getName();
-			System.out.println(tmpName);
 
 			/*
 			 * long size = entry.getSize(); long compressedSize =
@@ -128,7 +131,6 @@ public class Sample1 {
 
 			}
 		}
-		System.out.println(arr);
 
 		Sample1 inst;
 		List<String> implementArray = new ArrayList<String>();
@@ -176,8 +178,8 @@ public class Sample1 {
 			String dir) throws IOException {
 		Workset workset;
 		String sample;
+		Set<String> packageNameSet = new HashSet<String>();
 
-		System.out.println(commandArgs);
 		JSONObject obj = new JSONObject();
 		obj.put("class", "go.GraphLinksModel");
 		obj.put("nodeKeyProperty", "id");
@@ -191,9 +193,18 @@ public class Sample1 {
 		// while!)
 		this.initializeWorkset(workset);
 
+		
+		List<String> listAllPackages = new ArrayList<String>();
+		listAllPackages = this.listAllPackages(workset);
+		System.out.println(listAllPackages);
+		for(String packageName : listAllPackages){
+			
+		}
+		
 		String htmlString1 = new String();
 		for (Map.Entry<String, HashMap<String, ArrayList<String>>> entry : arr.entrySet()) {
 			String i = entry.getKey();
+			
 
 			/* HashMap<String,ArrayList<String>> sax = entry.getValue(); */
 			HashMap<String, ArrayList<String>> listOfFieldsAndMethods = entry.getValue();
@@ -201,10 +212,10 @@ public class Sample1 {
 			ArrayList<String> listOfMethodsJson = listOfFieldsAndMethods.get("list2");
 			ArrayList<String> listOfFieldsJson = listOfFieldsAndMethods.get("list1");
 
-			System.out.println(listOfMethodsJson);
 
 			String tmpString = "<tr><td>" + i + "</td><td>";
 			htmlString1 = htmlString1 + tmpString;
+			
 			JSONObject obj1 = new JSONObject();
 			obj1.put("category", "UndesiredEvent");
 			obj1.put("id", i);
@@ -236,7 +247,10 @@ public class Sample1 {
 			List<String> list1 = new ArrayList<String>();
 			List<String> list2 = new ArrayList<String>();
 			List<String> list3 = new ArrayList<String>();
-			Object[] listOfArrays = this.showDependenciesOf(workset, i);
+			Object[] listOfArrays = this.showDependenciesOfClass(workset, i);
+			
+			
+			
 			list1 = (List<String>) listOfArrays[0];
 			list2 = (List<String>) listOfArrays[1];
 			list3 = (List<String>) listOfArrays[2];
@@ -317,8 +331,6 @@ public class Sample1 {
 		obj.put("nodeDataArray", nodeArray);
 		obj.put("linkDataArray", linkArray);
 
-		this.createHtmlFile(htmlString1);
-
 		try (FileWriter file = new FileWriter("views/json/test.json")) {
 
 			file.write(obj.toString());
@@ -327,38 +339,97 @@ public class Sample1 {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
+		this.createHtmlFile(htmlString1);
 
+	}
+	
+	// List of packages contained in uploaded file
+	protected List<String> listAllPackages(Workset workset) {
+		
+		List<String> list1 = new ArrayList<String>();
+		GenericClassContainer[] listOfClassContainers = workset.getClassContainers();
+		
+		JSONObject obj = new JSONObject();
+		obj.put("class", "go.GraphLinksModel");
+		obj.put("nodeKeyProperty", "id");
+		JSONArray nodeArray = new JSONArray();
+		JSONArray linkArray = new JSONArray();
+		
+		for(GenericClassContainer classContainer: listOfClassContainers){
+			ClassPackage[] listOfPackages = classContainer.getPackages();
+			for(ClassPackage classPackage : listOfPackages){
+				String classPackageName = classPackage.getName();
+				
+				JSONObject obj1 = new JSONObject();
+				obj1.put("category", "UndesiredEvent");
+				obj1.put("id", classPackageName);
+				obj1.put("text", classPackageName);
+				obj1.put("color", "lightyellow");
+				nodeArray.add(obj1);
+				
+				
+				ClassPackage[] listOfDirectReferredPackages = classPackage.getDirectReferredPackages();
+				for(ClassPackage j : listOfDirectReferredPackages){
+					JSONObject obj2 = new JSONObject();
+					obj2.put("from", classPackageName);
+					obj2.put("color", "#2F4F4F");
+					obj2.put("thick", 1.5);
+					obj2.put("category", "DirectedAssociation");
+					obj2.put("to", j.getName());
+					linkArray.add(obj2);
+				}
+				
+			}
+		}
+		
+		obj.put("nodeDataArray", nodeArray);
+		obj.put("linkDataArray", linkArray);
+		System.out.print(obj);
+		
+		try (FileWriter file = new FileWriter("views/json/packageview.json")) {
+
+			file.write(obj.toString());
+			file.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return list1;
+	}
+	
+	protected void showDependenciesOfPackage(Workset workset) {
 	}
 
 	// -----------------
-	protected Object[] showDependenciesOf(Workset workset, String className) {
+	protected Object[] showDependenciesOfClass(Workset workset, String className) {
 		ClassInformation classInfo;
 		ClassInformation[] allClasses;
 		ClassInformation[] directlyUseClasses;
 		ClassInformation[] directlyImplemntedInterfaces;
 		ClassInformation[] directlyExtendedInterfaces;
 		ClassInformation[] notUniqClasses;
+		
 
-		// Lookup the class of interest
+		// Lookup the class of interest 
 		classInfo = workset.getClassInfo(className);
+		
+		
+		
 
 		// Get interfaces which are implemented by current class/interface
 		// (Realization)
 		directlyImplemntedInterfaces = classInfo.getDirectlyImplementedInterfaces();
 		List<String> a1 = this.showResult(directlyImplemntedInterfaces);
-		/*
-		 * System.out.println("\n\n" + classInfo.getName() +
-		 * " implements interfaces:"); System.out.println(a1);
-		 */
+
 
 		// Get classes which are extended by current class/interface
 		// (Generalization)
 		directlyExtendedInterfaces = classInfo.getDirectlyExtendedInterfaces();
 		List<String> a2 = this.showResult(directlyExtendedInterfaces);
-		/*
-		 * System.out.println("\n\n" + classInfo.getName() +
-		 * " extends classes:"); System.out.println(a2);
-		 */
+	
 
 		// Combine two arrays
 		List<String> a12 = new ArrayList<String>(a1);
@@ -379,10 +450,7 @@ public class Sample1 {
 				uniqueList.add(item);
 			}
 		}
-		/*
-		 * System.out.println("\n\n" + classInfo.getName() + " uses classes:");
-		 * System.out.println(uniqueList);
-		 */
+		
 
 		return new Object[] { a1, a2, uniqueList };
 
