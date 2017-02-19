@@ -340,6 +340,16 @@ public class Sample1 {
 			e.printStackTrace();
 		}
 		
+		try (FileWriter file = new FileWriter("views/json/classview.json")) {
+
+			file.write(obj.toString());
+			file.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		
 		
 		this.createHtmlFile(htmlString1);
 
