@@ -192,7 +192,7 @@ public class Sample1 {
 		// Load all elements on the claspath and pre-analyze them (might take a
 		// while!)
 		this.initializeWorkset(workset);
-
+		this.createDefaultComponentViewFile();
 		
 		List<String> listAllPackages = new ArrayList<String>();
 		listAllPackages = this.listAllPackages(workset);
@@ -354,6 +354,25 @@ public class Sample1 {
 		this.createHtmlFile(htmlString1);
 
 	}
+	
+	
+	protected void createDefaultComponentViewFile() {
+		JSONObject obj = new JSONObject();
+		obj.put("class", "go.GraphLinksModel");
+		obj.put("nodeKeyProperty", "id");
+		obj.put("nodeDataArray", "");
+		obj.put("linkDataArray", "");
+		try (FileWriter file = new FileWriter("views/json/componentview.json")) {
+
+			file.write(obj.toString());
+			file.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	
 	// List of packages contained in uploaded file
 	protected List<String> listAllPackages(Workset workset) {
