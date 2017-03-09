@@ -522,7 +522,7 @@ public class Sample1 {
 
 	// Create report.html file
 	protected void createHtmlFile(String class1) throws IOException {
-		File htmlTemplateFile = new File("views/output/template.html");
+		File htmlTemplateFile = new File("views/template.html");
 		String htmlString = FileUtils.readFileToString(htmlTemplateFile, Charset.forName("UTF-8"));
 		String contents = class1;
 		htmlString = htmlString.replace("$contents", contents);
