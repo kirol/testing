@@ -331,7 +331,7 @@ public class Sample1 {
 		obj.put("nodeDataArray", nodeArray);
 		obj.put("linkDataArray", linkArray);
 
-		try (FileWriter file = new FileWriter("views/json/test.json")) {
+		try (FileWriter file = new FileWriter("views/json/tmp.json")) {
 
 			file.write(obj.toString());
 			file.flush();
@@ -340,7 +340,7 @@ public class Sample1 {
 			e.printStackTrace();
 		}
 		
-		try (FileWriter file = new FileWriter("views/json/classview.json")) {
+		try (FileWriter file = new FileWriter("views/json/tmp.json")) {
 
 			file.write(obj.toString());
 			file.flush();
