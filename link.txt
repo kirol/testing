@@ -1,3 +1,4 @@
 http://toolsqa.com/selenium-webdriver/selenium-automation-hybrid-framework/
 http://www.softwaretestinghelp.com/selenium-tutorial-1/
 http://www.guru99.com/sessions-parallel-run-and-dependency-in-selenium.html
+https://www.amazon.com/Google-Tests-Software-James-Whittaker/dp/0321803027/ref=pd_sim_14_9?_encoding=UTF8&pd_rd_i=0321803027&pd_rd_r=6G5PJRHTQFV464FHPY8V&pd_rd_w=7iXtM&pd_rd_wg=PnYqf&psc=1&refRID=6G5PJRHTQFV464FHPY8V
