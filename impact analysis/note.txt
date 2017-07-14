@@ -1,3 +1,6 @@
+Support context menu when right-clicking each Class/Interface (Association, Aggregation, ...)
+- Right-click on relationship ==> context menu (New, Delete, ...)
+- Click on relationship ==> able to move link to other Class/Interface
 Rational Rose
 Attah community
 
