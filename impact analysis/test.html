@@ -1,0 +1,1740 @@
+<!--    test.json = current view
+classview.json = class view
+componentview.json = component view
+packageview.json = package view -->
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="lib/dist/js/multiselect.min.js"></script>
+    <script src="../release/go.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="../css/w3.css">
+    <script src="angular.js"></script>
+    <link href="../css/select2.min.css" rel="stylesheet" />
+    <script src="../js/select2.min.js"></script>
+    <script src="../controllers/main-ng.directive.js"></script>
+    <script src="../controllers/toolbox-ng.directive.js"></script>
+    <script src="../controllers/test-case-ng.directive.js"></script>
+    <script src="../controllers/manage-component-view-ng.directive.js"></script>
+    <script src="../controllers/manage-test-case-view-ng.directive.js"></script>
+    <script src="../controllers/manage-class-view-ng.directive.js"></script>
+    <script src="../controllers/manage-database-ng.directive.js"></script>
+    <script src="../controllers/upload-ng.directive.js"></script>
+    <script src="../controllers/impact-table-ng.directive.js"></script>
+    <script src="../controllers/manage-requirement-view-ng.directive.js"></script>
+    <link rel="stylesheet" href="../css/level-impact.css">
+    <!--    <script src="../release/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="../release/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="../release/easy-autocomplete.themes.min.css"> -->
+    <script id="code">
+    jQuery(window).load(function() {
+        // Animate loader off screen
+        jQuery(".se-pre-con").fadeOut("slow");
+    });
+
+    // Initialize bootstrap tooltip using jquery
+    jQuery(document).ready(function() {
+        jQuery('[data-toggle="tooltip"]').tooltip();
+    });
+
+    // Initialize select2
+    jQuery(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "n/a",
+            dropdownAutoWidth: true,
+            width: 'auto'
+        });
+    });
+
+    // Override the makeNetwork method to also initialize
+    // ForceDirectedVertex.isFixed from the corresponding Node.isSelected.
+    /** @override */
+
+    // end DemoForceDirectedLayout class
+
+    function init() {
+        //if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
+        var $ = go.GraphObject.make; // for conciseness in defining templates
+
+        var yellowgrad = $(go.Brush, "Linear", {
+            0: "rgb(254, 201, 0)",
+            1: "rgb(254, 162, 0)"
+        });
+        var greengrad = $(go.Brush, "Linear", {
+            0: "#98FB98",
+            1: "#9ACD32"
+        });
+        var bluegrad = $(go.Brush, "Linear", {
+            0: "#B0E0E6",
+            1: "#87CEEB"
+        });
+        var redgrad = $(go.Brush, "Linear", {
+            0: "#C45245",
+            1: "#871E1B"
+        });
+        var whitegrad = $(go.Brush, "Linear", {
+            0: "#F0F8FF",
+            1: "#E6E6FA"
+        });
+
+        var bigfont = "bold 13pt times";
+        var smallfont = "bold 11pt times";
+
+        // Common text styling
+        function textStyle() {
+            return {
+                margin: 6,
+                wrap: go.TextBlock.WrapFit,
+                textAlign: "center",
+                editable: true,
+                font: bigfont
+            }
+        }
+
+        myDiagram =
+            $(go.Diagram, "myDiagramDiv", {
+                // have mouse wheel events zoom in and out instead of scroll up and down
+                "toolManager.mouseWheelBehavior": go.ToolManager.WheelNone,
+                "animationManager.isEnabled": false,
+                initialAutoScale: go.Diagram.Uniform,
+                "linkingTool.archetypeLinkData": {
+                    category: "Association"
+                },
+                initialContentAlignment: go.Spot.Top,
+                /*layout: $(go.LayeredDigraphLayout, {
+                    isInitial: false,
+                    isOngoing: false,
+                    layerSpacing: 50
+                }),*/
+                layout: $(go.TreeLayout, { // this only lays out in trees nodes connected by "generalization" links
+                    angle: 90,
+                    /*layerSpacing: 20,
+                    nodeSpacing: 20,
+                    layerSpacingParentOverlap: 0,*/
+                    path: go.TreeLayout.PathSource, // links go from child to parent
+                    setsPortSpot: false, // keep Spot.AllSides for link connection spot
+                    setsChildPortSpot: false, // keep Spot.AllSides 
+                    isOngoing: false,
+                }),
+                "undoManager.isEnabled": true
+            });
+
+        // when the document is modified, add a "*" to the title and enable the "Save" button
+        myDiagram.addDiagramListener("Modified", function(e) {
+            var button = document.getElementById("SaveButton");
+            if (button) button.disabled = !myDiagram.isModified;
+            var idx = document.title.indexOf("*");
+            if (myDiagram.isModified) {
+                if (idx < 0) document.title += "*";
+            } else {
+                if (idx >= 0) document.title = document.title.substr(0, idx);
+            }
+        });
+
+        function modifyData(e, obj) {
+            myDiagram.startTransaction("Modify Data");
+            // get the context menu that holds the button that was clicked
+            var contextmenu = obj.part;
+            // get the node data to which the Node is data bound
+            var nodedata = contextmenu.data;
+            myDiagram.commitTransaction("Modify Data");
+        }
+
+        // Add Attribute
+        function changeAttr(e, obj) {
+            myDiagram.startTransaction("changed request");
+            // get the context menu that holds the button that was clicked
+            var contextmenu = obj.part;
+            // get the node data to which the Node is data bound
+            var nodedata = contextmenu.data;
+
+            var addednodedata = [{
+                "text": "+NewAttribute "
+            }];
+            if (nodedata.list1 === undefined) {
+                nodedata.list1 = [];
+                var fullnodedata = nodedata.list1.concat(addednodedata);
+            } else {
+                var fullnodedata = nodedata.list1.concat(addednodedata);
+            }
+            myDiagram.model.setDataProperty(nodedata, "list1", fullnodedata);
+            myDiagram.commitTransaction("changed request");
+        }
+
+        // Add Method
+        function changeMethod(e, obj) {
+            myDiagram.startTransaction("changed request");
+            // get the context menu that holds the button that was clicked
+            var contextmenu = obj.part;
+            // get the node data to which the Node is data bound
+            var nodedata = contextmenu.data;
+
+            var addednodedata = [{
+                "text": "+NewOperation "
+            }];
+            if (nodedata.list2 === undefined) {
+                nodedata.list2 = [];
+                var fullnodedata = nodedata.list2.concat(addednodedata);
+            } else {
+                var fullnodedata = nodedata.list2.concat(addednodedata);
+            }
+            myDiagram.model.setDataProperty(nodedata, "list2", fullnodedata);
+            myDiagram.commitTransaction("changed request");
+        }
+
+
+        function changeDatabase(e, obj) {
+            myDiagram.startTransaction("change Database");
+            document.getElementById('id01').style.display = 'block';
+            var contextmenu = obj.part;
+            // get the node data to which the Node is data bound
+            var nodedata = contextmenu.data;
+            //console.log(JSON.stringify(myDiagram.model.copyNodeData(nodedata)));
+            // List all tables on modal
+            jQuery.getJSON("json/database.json", function(data) {
+                var items11 = [];
+                jQuery.each(data, function(keyi, vali) {
+                    items11.push("<tr><td style='font-size:14px; text-align:center'><input type='checkbox' class='database-checkboxes' id=" + nodedata.id + " value='" + vali + "'/> " + vali + "</td><td><div style='text-align:center'><select style='font-size:14px' class='selectTableAction' id='" + vali + "'><option>Modify</option><option>Use</option></select></td></div></tr>");
+                });
+                jQuery("#selectTable tbody").html(items11);
+            });
+
+            //Get available data of node
+            var nodeJsonData = myDiagram.model.copyNodeData(nodedata);
+            var items = [];
+            var rv = {};
+            if (nodeJsonData["database"] != null) {
+                console.log(Object.keys(nodeJsonData["database"]).length.toString() + " length");
+                if (Object.keys(nodeJsonData["database"]).length > 0) {
+                    console.log(nodeJsonData["database"]);
+                    jQuery.each(nodeJsonData["database"], function(key, val) {
+                        var tablename = key;
+                        var action = val;
+                        rv[tablename] = action;
+                        console.log(tablename + " :: " + action);
+                        items.push("<tr class='tbRowAddData'><td style='font-size:14px; text-align:center'>" + tablename + "</td><td style='font-size:14px; text-align:center'>" + action + "</td></tr>");
+                    });
+                }
+            } else {
+                console.log("My catch: nodeJsonData.database is undefined");
+            }
+            jQuery("#selectTableNode tbody").html(items);
+
+            function addDataToNode() {
+                jQuery('#selectTable > tbody  > tr').each(function() {
+                    //...code...
+                    if (jQuery(this).find('input[type="checkbox"]').is(':checked')) {
+                        var tablename = jQuery(this).find('input[type="checkbox"]').val();
+                        var action = jQuery(this).find("select option:selected").val();
+                        rv[tablename] = action;
+                        //console.log(tablename+" "+action);
+                        var trVal = "<tr class='tbRowAddData'><td style='font-size:14px; text-align:center'>" + tablename + "</td><td style='font-size:14px; text-align:center'>" + action + "</td></tr>";
+                        if (items.indexOf(trVal) < 0) {
+                            jQuery("#selectTableNode tbody").append(trVal);
+                        } else {
+                            console.log("tr element is exist");
+                        }
+
+                        items.push(trVal);
+                    }
+                });
+                myDiagram.model.setDataProperty(nodedata, "database", rv); // Press save to save the changes to json file.
+                //myDiagram.commitTransaction("change Database");
+
+            }
+
+            document.getElementById("btnApproveUserEdit").removeEventListener("click", addDataToNode);
+
+            document.getElementById("btnApproveUserEdit").addEventListener("click", addDataToNode);
+
+            jQuery(".tbRowAddData").bind("dblclick", function() {
+                console.log("dblclick");
+                jQuery(this).remove();
+                var tablename = jQuery(this).find('td:eq(0)').text();
+                var action = jQuery(this).find('td:eq(1)').text();
+                //rv[tablename]=action;
+                if (rv.hasOwnProperty(tablename)) {
+                    delete rv[tablename];
+                    myDiagram.model.setDataProperty(nodedata, "database", rv); // Press save to save the changes to json file.
+                }
+                console.log(tablename + " ==== " + action);
+                //var trVal="<tr class='tbRowAddData'><td style='font-size:14px; text-align:center'>" + tablename + "</td><td style='font-size:14px; text-align:center'>"+action+"</td></tr>";
+
+            });
+
+            myDiagram.commitTransaction("change Database");
+
+            document.getElementById("SaveButton_1").addEventListener("click", function() {
+                document.getElementById("btnApproveUserEdit").removeEventListener("click", addDataToNode);
+            });
+
+            document.getElementById("btnDeclineUserEdit").addEventListener("click", function() {
+                document.getElementById("btnApproveUserEdit").removeEventListener("click", addDataToNode);
+            });
+        }
+
+        // Undesired events have a special adornment that allows adding additional "reasons"
+        var UndesiredEventAdornment =
+            $(go.Adornment, "Spot",
+                $(go.Panel, "Auto",
+                    $(go.Shape, {
+                        fill: null,
+                        stroke: "dodgerblue",
+                        strokeWidth: 4
+                    }),
+                    $(go.Placeholder)),
+                // the button to create a "next" node, at the top-right corner
+                $("Button", {
+                        alignment: go.Spot.BottomRight,
+                        click: addReason
+                    }, // this function is defined below
+                    new go.Binding("visible", "", function(a) {
+                        return !a.diagram.isReadOnly;
+                    }).ofObject(),
+                    $(go.Shape, "TriangleDown", {
+                        desiredSize: new go.Size(10, 10)
+                    })
+                )
+            );
+
+        var reasonTemplate = $(go.Panel, "Horizontal",
+            $(go.TextBlock, "Param", {
+                    margin: new go.Margin(4, 0, 0, 0),
+                    maxSize: new go.Size(200, NaN),
+                    wrap: go.TextBlock.WrapFit,
+                    stroke: "whitesmoke",
+                    editable: true,
+                    font: smallfont
+                },
+                new go.Binding("text", "text").makeTwoWay())
+        );
+
+
+        // Define itemtemplate for node's properties
+        var list1Template = $(go.Panel, "Horizontal",
+            $(go.TextBlock, "New Attribute", {
+                    margin: new go.Margin(0, 3, 0, 3),
+                    editable: true,
+                    font: "8px times"
+                },
+                new go.Binding("text").makeTwoWay())
+        );
+
+        // Define itemtemplate for node's methods
+        var list2Template = $(go.Panel, "Horizontal",
+            $(go.TextBlock, "New Operation()", {
+                    margin: new go.Margin(0, 3, 0, 3),
+                    editable: true,
+                    textAlign: 'left',
+                    font: "8px times"
+                },
+                new go.Binding("text").makeTwoWay())
+        );
+
+        // define the Node template for class
+        myDiagram.nodeTemplateMap.add("UndesiredEvent",
+            $(go.Node, "Auto",
+                new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), {
+                    // display a node 's test case on right sidebar
+                    click: function(e, obj) {
+                        if (obj.part.data.testcase === undefined) {
+                            jQuery('#listoftestcases').html("");
+                        } else {
+                            var items = [];
+                            jQuery.each(obj.part.data.testcase, function(keyi, vali) {
+                                items.push("<ul>" + " + " + vali + "</ul>");
+                            });
+                            jQuery("#listoftestcases").html(items);
+                        }
+                        if (obj.part.data.database === undefined) {
+                            jQuery('#listofdatabases').html("");
+                        } else {
+                            var items = [];
+                            jQuery.each(obj.part.data.database, function(keyi, vali) {
+                                items.push("<ul>" + " + " + keyi + " ( " + vali + " ) " + "</ul>");
+                            });
+                            jQuery("#listofdatabases").html(items);
+                        }
+                    },
+
+                    contextMenu: // define a context menu for each node
+                        $(go.Adornment, "Vertical", {
+                                background: "black"
+                            },
+                            $("ContextMenuButton",
+                                $(go.TextBlock, "Add Field", {
+                                    alignment: go.Spot.Left,
+                                    margin: new go.Margin(0, 3, 0, 3)
+                                }), {
+                                    click: changeAttr
+                                }),
+                            $("ContextMenuButton",
+                                $(go.TextBlock, "Add Method", {
+                                    alignment: go.Spot.Left,
+                                    margin: new go.Margin(0, 3, 0, 3)
+                                }), {
+                                    click: changeMethod
+                                }),
+                            $("ContextMenuButton",
+                                $(go.TextBlock, "Manage Database", {
+                                    alignment: go.Spot.Left,
+                                    margin: new go.Margin(0, 3, 0, 3)
+                                }), {
+                                    click: changeDatabase
+                                }),
+                            $("ContextMenuButton",
+                                $(go.TextBlock, "Manage Database", {
+                                    alignment: go.Spot.Left,
+                                    margin: new go.Margin(0, 3, 0, 3)
+                                }), {
+                                    click: function(e, obj) {
+                                        myDiagram.toolManager.linkingTool.archetypeLinkData = {
+                                            category: "Dependency"
+                                        };
+                                    }
+                                })
+                            // more ContextMenuButtons would go here
+                        ) // end Adornment
+                },
+
+                // define the node's outer shape, which will surround the TextBlock
+                $(go.Shape, "RoundedRectangle", new go.Binding("fill", "color").makeTwoWay(), new go.Binding("fill", "isHighlighted", function(h) {
+                    if (h) return "orange";
+                    else return $(new go.Binding("fill", "color").makeTwoWay())
+                }).ofObject(), {
+                    parameter1: 0, // the corner has a large radius
+                    //fill: "lightyellow",
+                    //stroke: "black",
+                    portId: "", // this Shape is the Node's port, not the whole Node
+                    fromLinkable: true,
+                    fromLinkableSelfNode: false,
+                    fromLinkableDuplicates: false,
+                    toLinkable: true,
+                    toLinkableSelfNode: true,
+                    toLinkableDuplicates: false,
+                    cursor: "cell"
+                }),
+
+                $(go.Panel, "Table", {
+                        defaultAlignment: go.Spot.TopLeft,
+                        defaultRowSeparatorStroke: "black"
+                    },
+
+                    $(go.TextBlock, "Class", {
+                            row: 0,
+                            margin: new go.Margin(3, 3, 0, 3)
+                        }, {
+                            font: "bold 9pt times",
+                            alignment: go.Spot.Center,
+                            editable: true // editing the text automatically updates the model data
+                        },
+
+                        new go.Binding("text").makeTwoWay()),
+
+                    // Table 1
+                    $(go.Panel, "Table", {
+                            row: 1
+                        },
+                        $(go.TextBlock, "Field", {
+                            column: 1,
+                            font: "8pt times",
+                            margin: new go.Margin(0, 5, 0, 0)
+                        }),
+                        $("PanelExpanderButton", "LIST1", {
+                            column: 0
+                        }),
+                        $(go.Panel, "Vertical", {
+                                name: "LIST1",
+                                row: 1,
+                                column: 0,
+                                itemTemplate: list1Template,
+                                alignment: go.Spot.Left,
+                                columnSpan: 2,
+                            },
+                            new go.Binding("itemArray", "list1"))
+
+                    ),
+                    // Table 2
+                    $(go.Panel, "Table", {
+                            row: 2
+                        },
+                        $(go.TextBlock, "Method", {
+                            column: 1,
+                            font: "8pt times"
+                        }),
+                        $("PanelExpanderButton", "LIST2", {
+                            column: 0
+                        }),
+                        $(go.Panel, "Vertical", {
+                                name: "LIST2",
+                                row: 1,
+                                column: 0,
+                                itemTemplate: list2Template,
+                                alignment: go.Spot.Left,
+                                columnSpan: 2
+                            },
+                            new go.Binding("itemArray", "list2"))
+                    )
+                )
+            )
+        );
+
+        // clicking the button on an UndesiredEvent node inserts a new text object into the panel
+        function addReason(e, obj) {
+            var adorn = obj.part;
+            if (adorn === null) return;
+            e.handled = true;
+            var arr = adorn.adornedPart.data.reasonsList;
+            myDiagram.startTransaction("add reason");
+            myDiagram.model.addArrayItem(arr, {});
+            myDiagram.commitTransaction("add reason");
+        }
+
+        myDiagram.linkTemplate =
+            $(go.Link, {
+                    routing: go.Link
+                }
+                /* ,
+                                    $(go.Shape),
+                                    $(go.Shape, {
+                                            scale: 1.3,
+                                            fill: "white"
+                                        },
+                                        new go.Binding("toArrow", "category", convertToArrow)) */
+            );
+
+        myDiagram.linkTemplateMap.add("Association",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: ""
+                })));
+
+        myDiagram.linkTemplateMap.add("DirectedAssociation",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Triangle"
+                })));
+
+        myDiagram.linkTemplateMap.add("Dependency",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, {
+                    strokeDashArray: [5, 7]
+                }, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Triangle"
+                })));
+
+        myDiagram.linkTemplateMap.add("Aggregation",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Diamond",
+                    fill: "white"
+                })));
+
+        myDiagram.linkTemplateMap.add("Composition",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Diamond"
+                })));
+
+
+        myDiagram.linkTemplateMap.add("Generalization",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                        toArrow: "Triangle",
+                        fill: "white"
+                    }
+
+                )));
+        //strokeDashArray
+        myDiagram.linkTemplateMap.add("Realization",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, {
+                    strokeDashArray: [5, 7]
+                }, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Triangle",
+                    fill: "white"
+                })));
+        // read in the JSON-format data from the "mySavedModel" element
+        load();
+    }
+
+    function layout() {
+        myDiagram.layoutDiagram(true);
+    }
+
+    function deleteItem(obj, item) {
+        if (obj.hasOwnProperty(item)) {
+            delete obj[item];
+        }
+    }
+
+    function save() {
+        //alert("save OK");
+        console.log("save function OK");
+        document.getElementById('id01').style.display = 'none'
+        var modelData = JSON.parse(myDiagram.model.toJson());
+        var nodeData = modelData["nodeDataArray"];
+        var linkData = modelData["linkDataArray"];
+        for (idx in nodeData) {
+            if (nodeData[idx]["category"] == "Comment") {
+                nodeData[idx]["color"] = "white";
+            }
+            //UndesiredEvent
+            if (nodeData[idx]["category"] == "UndesiredEvent") {
+                nodeData[idx]["color"] = "lightyellow";
+            }
+            deleteItem(nodeData[idx], "function");
+            deleteItem(nodeData[idx], "input");
+            deleteItem(nodeData[idx], "output");
+        }
+
+        for (idx in linkData) {
+            linkData[idx]["color"] = "#2F4F4F";
+            linkData[idx]["thick"] = 1.5;
+        }
+        var data = {};
+        data["class"] = "go.GraphLinksModel";
+        data["nodeKeyProperty"] = "id";
+        data["nodeDataArray"] = nodeData;
+        data["linkDataArray"] = linkData;
+        myDiagram.model = go.Model.fromJson(data);
+        $.when(
+            $.ajax({
+                url: '/process_save_json',
+                method: 'post',
+                data: myDiagram.model.toJson(),
+                success: function(response) {
+                    //alert( response );
+                    load();
+                }
+            })).done(function() {
+
+        });
+    }
+
+    function newDiagram() {
+        $("#divImpactTable").hide();
+        myDiagram.model = new go.GraphLinksModel([], []);
+    }
+
+    function load() {
+        $.when(
+            $.ajax({
+                url: '/process_load_json',
+                method: 'get',
+                success: function(response) {
+                    if (response === "") {
+                        newDiagram();
+                    } else {
+                        myDiagram.model = go.Model.fromJson(response);
+                        layout();
+                        var jsonData = myDiagram.model.toJson();
+                        //alert(jsonData);
+                        myDiagram.model = go.Model.fromJson(jsonData);
+                        myDiagram.layoutDiagram(false);
+                        var data = JSON.parse(response);
+                        myDiagram.commandHandler.increaseZoom(data["nodeDataArray"].length / 7);
+                        $("#divImpactTable").hide();
+                    }
+                }
+            })).done(function() {});
+    }
+
+    function focusNodeInDiagram(value) { // called by button
+        // create a case insensitive RegExp from what the user typed
+        var regex = new RegExp(value, "i");
+        myDiagram.startTransaction("focus node");
+        myDiagram.clearHighlighteds();
+
+        // search four different data properties for the string, any of which may match for success
+        if (value) { // empty string only clears highlighteds collection
+
+            var results = myDiagram.findNodesByExample({
+                text: regex
+            });
+            // try to center the diagram at the first node that was found
+            if (results.count > 0) myDiagram.centerRect(results.first().actualBounds);
+        }
+
+        myDiagram.commitTransaction("focus node");
+
+    }
+
+
+    function generateImpact() {
+        $.when(
+            $.ajax({
+                url: '/process_generate_impact',
+                method: 'post',
+                data: myDiagram.model.toJson(),
+                success: function(response) {
+                    var result = JSON.parse(response);
+                    var impact = result["impact"];
+                    if (!impact) {
+                        alert("There is no change!");
+                    } else {
+                        var dataModel = result["model"];
+                        var data = result["data"];
+                        var focus = result["focus"];
+                        myDiagram.model = go.Model.fromJson(JSON.stringify(dataModel));
+                        myDiagram.layoutDiagram(false);
+                        var number_of_node = dataModel["nodeDataArray"].length;
+                        myDiagram.commandHandler.increaseZoom(number_of_node / 7);
+                        focusNodeInDiagram(focus);
+                        //layout();
+                        /*var colgroup = "<colgroup><col span='1' style='width: 15%;'/><col span='1' style='width: 85%;'/></colgroup>";*/
+                        var thisHeader = '<thead style="font-size: 1.5rem; font-weight: bold">';
+                        thisHeader += '<tr>';
+                        thisHeader += '<th scope="col" rowspan="2">Impact Level</th>';
+                        thisHeader += '<th scope="col" colspan="5">Class / Package</th>'
+                        thisHeader += '</tr>';
+                        thisHeader += '<tr>';
+                        thisHeader += '<th scope="col">CLass / Package Name</th>';
+                        thisHeader += '<th scope="col">Fields</th>';
+                        thisHeader += '<th scope="col">Methods</th>';
+                        thisHeader += '<th scope="col">Dependent Data</th>';
+                        thisHeader += '<th scope="col">Test Cases</th>';
+                        thisHeader += '</tr>';
+                        thisHeader += '</thead>';
+                        $("#flatTable").html(thisHeader);
+                        for (i in data) {
+                            var sat;
+                            var impactLevel = Object.keys(data[i])[0];
+                            //alert(JSON.stringify(impactLevel));
+                            var rowspanLength = Object.values(data[i])[0].length + 1;
+                            var trVal = "<tr style='font-size: 1.2rem'>";
+                            trVal += "<td rowspan='" + rowspanLength + "' class='" + impactLevel + "' " + "style='vertical-align: top;  font-weight: bold'>" + impactLevel + "</td>";
+                            console.log(trVal);
+
+                            var data_i = Object.values(data[i])[0];
+                            for (j in data_i) {
+                                if (j === 0) {
+                                    trVal += "<td>" + data_i[j]["name"] + "</td>";
+                                    trVal += "<td>";
+                                    for (k1 in data_i[j]["Attribute"]) {
+                                        trVal += data_i[j]["Attribute"][k1] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k3 in data_i[j]["Operation"]) {
+                                        strVal += data_i[j]["Operation"][k3] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k5 in data_i[j]["Database"]) {
+                                        //console.log(data_i[j]["Attribute"][k]);
+                                        trVal += data_i[j]["Database"][k5] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k7 in data_i[j]["Testcases"]) {
+                                        //console.log(data_i[j]["Attribute"][k]);
+                                        trVal += data_i[j]["Testcases"][k] + "<br>";
+                                    }
+                                    trVal += "</td>";
+                                } else {
+                                    trVal += "<tr><td>" + data_i[j]["name"] + "</td>";
+                                    trVal += "<td>";
+                                    for (k2 in data_i[j]["Attribute"]) {
+                                        trVal += data_i[j]["Attribute"][k2] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k4 in data_i[j]["Operation"]) {
+                                        trVal += data_i[j]["Operation"][k4] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k6 in data_i[j]["Database"]) {
+                                        //console.log(data_i[j]["Attribute"][k]);
+                                        trVal += data_i[j]["Database"][k6] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k8 in data_i[j]["Testcases"]) {
+                                        //console.log(data_i[j]["Attribute"][k]);
+                                        trVal += data_i[j]["Testcases"][k8] + "<br>";
+                                    }
+                                    trVal += "</td></tr>"
+                                }
+                            }
+                            trVal += "</tr>";
+
+                            $("#flatTable").append(trVal);
+                            $("#divImpactTable").show();
+                        }
+                    }
+
+                }
+            })).done(function() {});
+
+    }
+
+    // Create class in diagram
+    function createClassInBackground() {
+        myDiagram.startTransaction('new node');
+        var loc = myDiagram.lastInput.documentPoint;
+        var locx = loc["x"];
+        var locy = loc["y"];
+        loc = locx + " " + locy;
+        var data = {
+            "category": "UndesiredEvent",
+            "loc": loc,
+            "text": "Class",
+            "color": "lightyellow"
+        }
+        myDiagram.model.addNodeData(data);
+        myDiagram.commitTransaction('new node');
+    }
+
+    // Create interface in diagram
+    function createInterfaceInBackground() {
+        myDiagram.startTransaction('new node');
+        var loc = myDiagram.lastInput.documentPoint;
+        var locx = loc["x"];
+        var locy = loc["y"];
+        loc = locx + " " + locy;
+        var data = {
+            "category": "UndesiredEvent",
+            "loc": loc,
+            "text": "<<Interface>>\nName",
+            "color": "white"
+        }
+        myDiagram.model.addNodeData(data);
+        myDiagram.commitTransaction('new node');
+    }
+
+    jQuery('body').bind('focusin focus', function(e) {
+        e.preventDefault();
+    })
+    </script>
+</head>
+<div style="font-size:25px">Visual map</div>
+<div class="line-separator"></div>
+
+<body onload="init()" style="background-color: #eee;width:100%">
+    <div id="sample">
+        <div style="width:100%; white-space:nowrap;">
+            <span style="display: inline-block; vertical-align: top; width:10%">
+                <toolbox-ng></toolbox-ng>
+            </span>
+            <span style="display: inline-block; vertical-align: top; width:74%">
+                <div id="myDiagramDiv" style="border: solid 1px black; height: 680px; background-color: white"></div>
+            </span>
+            <span style="display: inline-block; vertical-align: top; width:16%">
+                <test-case-ng></test-case-ng>
+                <div style="border: solid 1px black; background-color: #eee">
+                    <div style="background-color: #eeeeee;font-weight: bold;padding:5px 5px 5px 5px">-Database-
+                    </div>
+                    <div id="listofdatabases"; style="font-size: 12px; white-space: nowrap; overflow: hidden; margin: 5px 5px 5px 5px;height: 290px">
+                    </div>
+                </div>
+            </span>
+        </div>
+    </div>
+    <!-- Impact table-->
+    <impact-table-ng></impact-table-ng>
+    <!--  Upload form -->
+    <upload-ng></upload-ng>
+    <!-- Edit relationship form -->
+    <manage-database-ng></manage-database-ng>
+    <!-- Manage component view -->
+    <manage-component-view-ng></manage-component-view-ng>
+    <!-- Manage test cases view-->
+    <manage-test-case-view-ng></manage-test-case-view-ng>
+    <!-- Manage classes-->
+    <manage-class-view-ng></manage-class-view-ng>
+    <!-- Manage requirements-->
+    <manage-req-view-ng></manage-req-view-ng>
+</body>
+<div id="loading" class="se-pre-con"></div>
+
+</html>
+<!--    test.json = current view
+classview.json = class view
+componentview.json = component view
+packageview.json = package view -->
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="lib/dist/js/multiselect.min.js"></script>
+    <script src="../release/go.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="../css/w3.css">
+    <script src="angular.js"></script>
+    <link href="../css/select2.min.css" rel="stylesheet" />
+    <script src="../js/select2.min.js"></script>
+    <script src="../controllers/main-ng.directive.js"></script>
+    <script src="../controllers/toolbox-ng.directive.js"></script>
+    <script src="../controllers/test-case-ng.directive.js"></script>
+    <script src="../controllers/manage-component-view-ng.directive.js"></script>
+    <script src="../controllers/manage-test-case-view-ng.directive.js"></script>
+    <script src="../controllers/manage-class-view-ng.directive.js"></script>
+    <script src="../controllers/manage-database-ng.directive.js"></script>
+    <script src="../controllers/upload-ng.directive.js"></script>
+    <script src="../controllers/impact-table-ng.directive.js"></script>
+    <script src="../controllers/manage-requirement-view-ng.directive.js"></script>
+    <link rel="stylesheet" href="../css/level-impact.css">
+    <!--    <script src="../release/jquery.easy-autocomplete.min.js"></script>
+    <link rel="stylesheet" href="../release/easy-autocomplete.min.css">
+    <link rel="stylesheet" href="../release/easy-autocomplete.themes.min.css"> -->
+    <script id="code">
+    jQuery(window).load(function() {
+        // Animate loader off screen
+        jQuery(".se-pre-con").fadeOut("slow");
+    });
+
+    // Initialize bootstrap tooltip using jquery
+    jQuery(document).ready(function() {
+        jQuery('[data-toggle="tooltip"]').tooltip();
+    });
+
+    // Initialize select2
+    jQuery(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "n/a",
+            dropdownAutoWidth: true,
+            width: 'auto'
+        });
+    });
+
+    // Override the makeNetwork method to also initialize
+    // ForceDirectedVertex.isFixed from the corresponding Node.isSelected.
+    /** @override */
+
+    // end DemoForceDirectedLayout class
+
+    function init() {
+        //if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
+        var $ = go.GraphObject.make; // for conciseness in defining templates
+
+        var yellowgrad = $(go.Brush, "Linear", {
+            0: "rgb(254, 201, 0)",
+            1: "rgb(254, 162, 0)"
+        });
+        var greengrad = $(go.Brush, "Linear", {
+            0: "#98FB98",
+            1: "#9ACD32"
+        });
+        var bluegrad = $(go.Brush, "Linear", {
+            0: "#B0E0E6",
+            1: "#87CEEB"
+        });
+        var redgrad = $(go.Brush, "Linear", {
+            0: "#C45245",
+            1: "#871E1B"
+        });
+        var whitegrad = $(go.Brush, "Linear", {
+            0: "#F0F8FF",
+            1: "#E6E6FA"
+        });
+
+        var bigfont = "bold 13pt times";
+        var smallfont = "bold 11pt times";
+
+        // Common text styling
+        function textStyle() {
+            return {
+                margin: 6,
+                wrap: go.TextBlock.WrapFit,
+                textAlign: "center",
+                editable: true,
+                font: bigfont
+            }
+        }
+
+        myDiagram =
+            $(go.Diagram, "myDiagramDiv", {
+                // have mouse wheel events zoom in and out instead of scroll up and down
+                "toolManager.mouseWheelBehavior": go.ToolManager.WheelNone,
+                "animationManager.isEnabled": false,
+                initialAutoScale: go.Diagram.Uniform,
+                "linkingTool.archetypeLinkData": {
+                    category: "Association"
+                },
+                initialContentAlignment: go.Spot.Top,
+                /*layout: $(go.LayeredDigraphLayout, {
+                    isInitial: false,
+                    isOngoing: false,
+                    layerSpacing: 50
+                }),*/
+                layout: $(go.TreeLayout, { // this only lays out in trees nodes connected by "generalization" links
+                    angle: 90,
+                    /*layerSpacing: 20,
+                    nodeSpacing: 20,
+                    layerSpacingParentOverlap: 0,*/
+                    path: go.TreeLayout.PathSource, // links go from child to parent
+                    setsPortSpot: false, // keep Spot.AllSides for link connection spot
+                    setsChildPortSpot: false, // keep Spot.AllSides 
+                    isOngoing: false,
+                }),
+                "undoManager.isEnabled": true
+            });
+
+        // when the document is modified, add a "*" to the title and enable the "Save" button
+        myDiagram.addDiagramListener("Modified", function(e) {
+            var button = document.getElementById("SaveButton");
+            if (button) button.disabled = !myDiagram.isModified;
+            var idx = document.title.indexOf("*");
+            if (myDiagram.isModified) {
+                if (idx < 0) document.title += "*";
+            } else {
+                if (idx >= 0) document.title = document.title.substr(0, idx);
+            }
+        });
+
+        function modifyData(e, obj) {
+            myDiagram.startTransaction("Modify Data");
+            // get the context menu that holds the button that was clicked
+            var contextmenu = obj.part;
+            // get the node data to which the Node is data bound
+            var nodedata = contextmenu.data;
+            myDiagram.commitTransaction("Modify Data");
+        }
+
+        // Add Attribute
+        function changeAttr(e, obj) {
+            myDiagram.startTransaction("changed request");
+            // get the context menu that holds the button that was clicked
+            var contextmenu = obj.part;
+            // get the node data to which the Node is data bound
+            var nodedata = contextmenu.data;
+
+            var addednodedata = [{
+                "text": "+NewAttribute "
+            }];
+            if (nodedata.list1 === undefined) {
+                nodedata.list1 = [];
+                var fullnodedata = nodedata.list1.concat(addednodedata);
+            } else {
+                var fullnodedata = nodedata.list1.concat(addednodedata);
+            }
+            myDiagram.model.setDataProperty(nodedata, "list1", fullnodedata);
+            myDiagram.commitTransaction("changed request");
+        }
+
+        // Add Method
+        function changeMethod(e, obj) {
+            myDiagram.startTransaction("changed request");
+            // get the context menu that holds the button that was clicked
+            var contextmenu = obj.part;
+            // get the node data to which the Node is data bound
+            var nodedata = contextmenu.data;
+
+            var addednodedata = [{
+                "text": "+NewOperation "
+            }];
+            if (nodedata.list2 === undefined) {
+                nodedata.list2 = [];
+                var fullnodedata = nodedata.list2.concat(addednodedata);
+            } else {
+                var fullnodedata = nodedata.list2.concat(addednodedata);
+            }
+            myDiagram.model.setDataProperty(nodedata, "list2", fullnodedata);
+            myDiagram.commitTransaction("changed request");
+        }
+
+
+        function changeDatabase(e, obj) {
+            myDiagram.startTransaction("change Database");
+            document.getElementById('id01').style.display = 'block';
+            var contextmenu = obj.part;
+            // get the node data to which the Node is data bound
+            var nodedata = contextmenu.data;
+            //console.log(JSON.stringify(myDiagram.model.copyNodeData(nodedata)));
+            // List all tables on modal
+            jQuery.getJSON("json/database.json", function(data) {
+                var items11 = [];
+                jQuery.each(data, function(keyi, vali) {
+                    items11.push("<tr><td style='font-size:14px; text-align:center'><input type='checkbox' class='database-checkboxes' id=" + nodedata.id + " value='" + vali + "'/> " + vali + "</td><td><div style='text-align:center'><select style='font-size:14px' class='selectTableAction' id='" + vali + "'><option>Modify</option><option>Use</option></select></td></div></tr>");
+                });
+                jQuery("#selectTable tbody").html(items11);
+            });
+
+            //Get available data of node
+            var nodeJsonData = myDiagram.model.copyNodeData(nodedata);
+            var items = [];
+            var rv = {};
+            if (nodeJsonData["database"] != null) {
+                console.log(Object.keys(nodeJsonData["database"]).length.toString() + " length");
+                if (Object.keys(nodeJsonData["database"]).length > 0) {
+                    console.log(nodeJsonData["database"]);
+                    jQuery.each(nodeJsonData["database"], function(key, val) {
+                        var tablename = key;
+                        var action = val;
+                        rv[tablename] = action;
+                        console.log(tablename + " :: " + action);
+                        items.push("<tr class='tbRowAddData'><td style='font-size:14px; text-align:center'>" + tablename + "</td><td style='font-size:14px; text-align:center'>" + action + "</td></tr>");
+                    });
+                }
+            } else {
+                console.log("My catch: nodeJsonData.database is undefined");
+            }
+            jQuery("#selectTableNode tbody").html(items);
+
+            function addDataToNode() {
+                jQuery('#selectTable > tbody  > tr').each(function() {
+                    //...code...
+                    if (jQuery(this).find('input[type="checkbox"]').is(':checked')) {
+                        var tablename = jQuery(this).find('input[type="checkbox"]').val();
+                        var action = jQuery(this).find("select option:selected").val();
+                        rv[tablename] = action;
+                        //console.log(tablename+" "+action);
+                        var trVal = "<tr class='tbRowAddData'><td style='font-size:14px; text-align:center'>" + tablename + "</td><td style='font-size:14px; text-align:center'>" + action + "</td></tr>";
+                        if (items.indexOf(trVal) < 0) {
+                            jQuery("#selectTableNode tbody").append(trVal);
+                        } else {
+                            console.log("tr element is exist");
+                        }
+
+                        items.push(trVal);
+                    }
+                });
+                myDiagram.model.setDataProperty(nodedata, "database", rv); // Press save to save the changes to json file.
+                //myDiagram.commitTransaction("change Database");
+
+            }
+
+            document.getElementById("btnApproveUserEdit").removeEventListener("click", addDataToNode);
+
+            document.getElementById("btnApproveUserEdit").addEventListener("click", addDataToNode);
+
+            jQuery(".tbRowAddData").bind("dblclick", function() {
+                console.log("dblclick");
+                jQuery(this).remove();
+                var tablename = jQuery(this).find('td:eq(0)').text();
+                var action = jQuery(this).find('td:eq(1)').text();
+                //rv[tablename]=action;
+                if (rv.hasOwnProperty(tablename)) {
+                    delete rv[tablename];
+                    myDiagram.model.setDataProperty(nodedata, "database", rv); // Press save to save the changes to json file.
+                }
+                console.log(tablename + " ==== " + action);
+                //var trVal="<tr class='tbRowAddData'><td style='font-size:14px; text-align:center'>" + tablename + "</td><td style='font-size:14px; text-align:center'>"+action+"</td></tr>";
+
+            });
+
+            myDiagram.commitTransaction("change Database");
+
+            document.getElementById("SaveButton_1").addEventListener("click", function() {
+                document.getElementById("btnApproveUserEdit").removeEventListener("click", addDataToNode);
+            });
+
+            document.getElementById("btnDeclineUserEdit").addEventListener("click", function() {
+                document.getElementById("btnApproveUserEdit").removeEventListener("click", addDataToNode);
+            });
+        }
+
+        // Undesired events have a special adornment that allows adding additional "reasons"
+        var UndesiredEventAdornment =
+            $(go.Adornment, "Spot",
+                $(go.Panel, "Auto",
+                    $(go.Shape, {
+                        fill: null,
+                        stroke: "dodgerblue",
+                        strokeWidth: 4
+                    }),
+                    $(go.Placeholder)),
+                // the button to create a "next" node, at the top-right corner
+                $("Button", {
+                        alignment: go.Spot.BottomRight,
+                        click: addReason
+                    }, // this function is defined below
+                    new go.Binding("visible", "", function(a) {
+                        return !a.diagram.isReadOnly;
+                    }).ofObject(),
+                    $(go.Shape, "TriangleDown", {
+                        desiredSize: new go.Size(10, 10)
+                    })
+                )
+            );
+
+        var reasonTemplate = $(go.Panel, "Horizontal",
+            $(go.TextBlock, "Param", {
+                    margin: new go.Margin(4, 0, 0, 0),
+                    maxSize: new go.Size(200, NaN),
+                    wrap: go.TextBlock.WrapFit,
+                    stroke: "whitesmoke",
+                    editable: true,
+                    font: smallfont
+                },
+                new go.Binding("text", "text").makeTwoWay())
+        );
+
+
+        // Define itemtemplate for node's properties
+        var list1Template = $(go.Panel, "Horizontal",
+            $(go.TextBlock, "New Attribute", {
+                    margin: new go.Margin(0, 3, 0, 3),
+                    editable: true,
+                    font: "8px times"
+                },
+                new go.Binding("text").makeTwoWay())
+        );
+
+        // Define itemtemplate for node's methods
+        var list2Template = $(go.Panel, "Horizontal",
+            $(go.TextBlock, "New Operation()", {
+                    margin: new go.Margin(0, 3, 0, 3),
+                    editable: true,
+                    textAlign: 'left',
+                    font: "8px times"
+                },
+                new go.Binding("text").makeTwoWay())
+        );
+
+        // define the Node template for class
+        myDiagram.nodeTemplateMap.add("UndesiredEvent",
+            $(go.Node, "Auto",
+                new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), {
+                    // display a node 's test case on right sidebar
+                    click: function(e, obj) {
+                        if (obj.part.data.testcase === undefined) {
+                            jQuery('#listoftestcases').html("");
+                        } else {
+                            var items = [];
+                            jQuery.each(obj.part.data.testcase, function(keyi, vali) {
+                                items.push("<ul>" + " + " + vali + "</ul>");
+                            });
+                            jQuery("#listoftestcases").html(items);
+                        }
+                        if (obj.part.data.database === undefined) {
+                            jQuery('#listofdatabases').html("");
+                        } else {
+                            var items = [];
+                            jQuery.each(obj.part.data.database, function(keyi, vali) {
+                                items.push("<ul>" + " + " + keyi + " ( " + vali + " ) " + "</ul>");
+                            });
+                            jQuery("#listofdatabases").html(items);
+                        }
+                    },
+
+                    contextMenu: // define a context menu for each node
+                        $(go.Adornment, "Vertical", {
+                                background: "black"
+                            },
+                            $("ContextMenuButton",
+                                $(go.TextBlock, "Add Field", {
+                                    alignment: go.Spot.Left,
+                                    margin: new go.Margin(0, 3, 0, 3)
+                                }), {
+                                    click: changeAttr
+                                }),
+                            $("ContextMenuButton",
+                                $(go.TextBlock, "Add Method", {
+                                    alignment: go.Spot.Left,
+                                    margin: new go.Margin(0, 3, 0, 3)
+                                }), {
+                                    click: changeMethod
+                                }),
+                            $("ContextMenuButton",
+                                $(go.TextBlock, "Manage Database", {
+                                    alignment: go.Spot.Left,
+                                    margin: new go.Margin(0, 3, 0, 3)
+                                }), {
+                                    click: changeDatabase
+                                }),
+                            $("ContextMenuButton",
+                                $(go.TextBlock, "Manage Database", {
+                                    alignment: go.Spot.Left,
+                                    margin: new go.Margin(0, 3, 0, 3)
+                                }), {
+                                    click: function(e, obj) {
+                                        myDiagram.toolManager.linkingTool.archetypeLinkData = {
+                                            category: "Dependency"
+                                        };
+                                    }
+                                })
+                            // more ContextMenuButtons would go here
+                        ) // end Adornment
+                },
+
+                // define the node's outer shape, which will surround the TextBlock
+                $(go.Shape, "RoundedRectangle", new go.Binding("fill", "color").makeTwoWay(), new go.Binding("fill", "isHighlighted", function(h) {
+                    if (h) return "orange";
+                    else return $(new go.Binding("fill", "color").makeTwoWay())
+                }).ofObject(), {
+                    parameter1: 0, // the corner has a large radius
+                    //fill: "lightyellow",
+                    //stroke: "black",
+                    portId: "", // this Shape is the Node's port, not the whole Node
+                    fromLinkable: true,
+                    fromLinkableSelfNode: false,
+                    fromLinkableDuplicates: false,
+                    toLinkable: true,
+                    toLinkableSelfNode: true,
+                    toLinkableDuplicates: false,
+                    cursor: "cell"
+                }),
+
+                $(go.Panel, "Table", {
+                        defaultAlignment: go.Spot.TopLeft,
+                        defaultRowSeparatorStroke: "black"
+                    },
+
+                    $(go.TextBlock, "Class", {
+                            row: 0,
+                            margin: new go.Margin(3, 3, 0, 3)
+                        }, {
+                            font: "bold 9pt times",
+                            alignment: go.Spot.Center,
+                            editable: true // editing the text automatically updates the model data
+                        },
+
+                        new go.Binding("text").makeTwoWay()),
+
+                    // Table 1
+                    $(go.Panel, "Table", {
+                            row: 1
+                        },
+                        $(go.TextBlock, "Field", {
+                            column: 1,
+                            font: "8pt times",
+                            margin: new go.Margin(0, 5, 0, 0)
+                        }),
+                        $("PanelExpanderButton", "LIST1", {
+                            column: 0
+                        }),
+                        $(go.Panel, "Vertical", {
+                                name: "LIST1",
+                                row: 1,
+                                column: 0,
+                                itemTemplate: list1Template,
+                                alignment: go.Spot.Left,
+                                columnSpan: 2,
+                            },
+                            new go.Binding("itemArray", "list1"))
+
+                    ),
+                    // Table 2
+                    $(go.Panel, "Table", {
+                            row: 2
+                        },
+                        $(go.TextBlock, "Method", {
+                            column: 1,
+                            font: "8pt times"
+                        }),
+                        $("PanelExpanderButton", "LIST2", {
+                            column: 0
+                        }),
+                        $(go.Panel, "Vertical", {
+                                name: "LIST2",
+                                row: 1,
+                                column: 0,
+                                itemTemplate: list2Template,
+                                alignment: go.Spot.Left,
+                                columnSpan: 2
+                            },
+                            new go.Binding("itemArray", "list2"))
+                    )
+                )
+            )
+        );
+
+        // clicking the button on an UndesiredEvent node inserts a new text object into the panel
+        function addReason(e, obj) {
+            var adorn = obj.part;
+            if (adorn === null) return;
+            e.handled = true;
+            var arr = adorn.adornedPart.data.reasonsList;
+            myDiagram.startTransaction("add reason");
+            myDiagram.model.addArrayItem(arr, {});
+            myDiagram.commitTransaction("add reason");
+        }
+
+        myDiagram.linkTemplate =
+            $(go.Link, {
+                    routing: go.Link
+                }
+                /* ,
+                                    $(go.Shape),
+                                    $(go.Shape, {
+                                            scale: 1.3,
+                                            fill: "white"
+                                        },
+                                        new go.Binding("toArrow", "category", convertToArrow)) */
+            );
+
+        myDiagram.linkTemplateMap.add("Association",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: ""
+                })));
+
+        myDiagram.linkTemplateMap.add("DirectedAssociation",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Triangle"
+                })));
+
+        myDiagram.linkTemplateMap.add("Dependency",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, {
+                    strokeDashArray: [5, 7]
+                }, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Triangle"
+                })));
+
+        myDiagram.linkTemplateMap.add("Aggregation",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Diamond",
+                    fill: "white"
+                })));
+
+        myDiagram.linkTemplateMap.add("Composition",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Diamond"
+                })));
+
+
+        myDiagram.linkTemplateMap.add("Generalization",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                        toArrow: "Triangle",
+                        fill: "white"
+                    }
+
+                )));
+        //strokeDashArray
+        myDiagram.linkTemplateMap.add("Realization",
+            $(go.Link, {
+                    routing: go.Link
+                },
+                $(go.Shape, {
+                    strokeDashArray: [5, 7]
+                }, new go.Binding("strokeWidth", "thick"), new go.Binding("stroke", "color")),
+                $(go.Shape, {
+                    toArrow: "Triangle",
+                    fill: "white"
+                })));
+        // read in the JSON-format data from the "mySavedModel" element
+        load();
+    }
+
+    function layout() {
+        myDiagram.layoutDiagram(true);
+    }
+
+    function deleteItem(obj, item) {
+        if (obj.hasOwnProperty(item)) {
+            delete obj[item];
+        }
+    }
+
+    function save() {
+        //alert("save OK");
+        console.log("save function OK");
+        document.getElementById('id01').style.display = 'none'
+        var modelData = JSON.parse(myDiagram.model.toJson());
+        var nodeData = modelData["nodeDataArray"];
+        var linkData = modelData["linkDataArray"];
+        for (idx in nodeData) {
+            if (nodeData[idx]["category"] == "Comment") {
+                nodeData[idx]["color"] = "white";
+            }
+            //UndesiredEvent
+            if (nodeData[idx]["category"] == "UndesiredEvent") {
+                nodeData[idx]["color"] = "lightyellow";
+            }
+            deleteItem(nodeData[idx], "function");
+            deleteItem(nodeData[idx], "input");
+            deleteItem(nodeData[idx], "output");
+        }
+
+        for (idx in linkData) {
+            linkData[idx]["color"] = "#2F4F4F";
+            linkData[idx]["thick"] = 1.5;
+        }
+        var data = {};
+        data["class"] = "go.GraphLinksModel";
+        data["nodeKeyProperty"] = "id";
+        data["nodeDataArray"] = nodeData;
+        data["linkDataArray"] = linkData;
+        myDiagram.model = go.Model.fromJson(data);
+        $.when(
+            $.ajax({
+                url: '/process_save_json',
+                method: 'post',
+                data: myDiagram.model.toJson(),
+                success: function(response) {
+                    //alert( response );
+                    load();
+                }
+            })).done(function() {
+
+        });
+    }
+
+    function newDiagram() {
+        $("#divImpactTable").hide();
+        myDiagram.model = new go.GraphLinksModel([], []);
+    }
+
+    function load() {
+        $.when(
+            $.ajax({
+                url: '/process_load_json',
+                method: 'get',
+                success: function(response) {
+                    if (response === "") {
+                        newDiagram();
+                    } else {
+                        myDiagram.model = go.Model.fromJson(response);
+                        layout();
+                        var jsonData = myDiagram.model.toJson();
+                        //alert(jsonData);
+                        myDiagram.model = go.Model.fromJson(jsonData);
+                        myDiagram.layoutDiagram(false);
+                        var data = JSON.parse(response);
+                        myDiagram.commandHandler.increaseZoom(data["nodeDataArray"].length / 7);
+                        $("#divImpactTable").hide();
+                    }
+                }
+            })).done(function() {});
+    }
+
+    function focusNodeInDiagram(value) { // called by button
+        // create a case insensitive RegExp from what the user typed
+        var regex = new RegExp(value, "i");
+        myDiagram.startTransaction("focus node");
+        myDiagram.clearHighlighteds();
+
+        // search four different data properties for the string, any of which may match for success
+        if (value) { // empty string only clears highlighteds collection
+
+            var results = myDiagram.findNodesByExample({
+                text: regex
+            });
+            // try to center the diagram at the first node that was found
+            if (results.count > 0) myDiagram.centerRect(results.first().actualBounds);
+        }
+
+        myDiagram.commitTransaction("focus node");
+
+    }
+
+
+    function generateImpact() {
+        $.when(
+            $.ajax({
+                url: '/process_generate_impact',
+                method: 'post',
+                data: myDiagram.model.toJson(),
+                success: function(response) {
+                    var result = JSON.parse(response);
+                    var impact = result["impact"];
+                    if (!impact) {
+                        alert("There is no change!");
+                    } else {
+                        var dataModel = result["model"];
+                        var data = result["data"];
+                        var focus = result["focus"];
+                        myDiagram.model = go.Model.fromJson(JSON.stringify(dataModel));
+                        myDiagram.layoutDiagram(false);
+                        var number_of_node = dataModel["nodeDataArray"].length;
+                        myDiagram.commandHandler.increaseZoom(number_of_node / 7);
+                        focusNodeInDiagram(focus);
+                        //layout();
+                        /*var colgroup = "<colgroup><col span='1' style='width: 15%;'/><col span='1' style='width: 85%;'/></colgroup>";*/
+                        var thisHeader = '<thead style="font-size: 1.5rem; font-weight: bold">';
+                        thisHeader += '<tr>';
+                        thisHeader += '<th scope="col" rowspan="2">Impact Level</th>';
+                        thisHeader += '<th scope="col" colspan="5">Class / Package</th>'
+                        thisHeader += '</tr>';
+                        thisHeader += '<tr>';
+                        thisHeader += '<th scope="col">CLass / Package Name</th>';
+                        thisHeader += '<th scope="col">Fields</th>';
+                        thisHeader += '<th scope="col">Methods</th>';
+                        thisHeader += '<th scope="col">Dependent Data</th>';
+                        thisHeader += '<th scope="col">Test Cases</th>';
+                        thisHeader += '</tr>';
+                        thisHeader += '</thead>';
+                        $("#flatTable").html(thisHeader);
+                        for (i in data) {
+                            var sat;
+                            var impactLevel = Object.keys(data[i])[0];
+                            //alert(JSON.stringify(impactLevel));
+                            var rowspanLength = Object.values(data[i])[0].length + 1;
+                            var trVal = "<tr style='font-size: 1.2rem'>";
+                            trVal += "<td rowspan='" + rowspanLength + "' class='" + impactLevel + "' " + "style='vertical-align: top;  font-weight: bold'>" + impactLevel + "</td>";
+                            console.log(trVal);
+
+                            var data_i = Object.values(data[i])[0];
+                            for (j in data_i) {
+                                if (j === 0) {
+                                    trVal += "<td>" + data_i[j]["name"] + "</td>";
+                                    trVal += "<td>";
+                                    for (k1 in data_i[j]["Attribute"]) {
+                                        trVal += data_i[j]["Attribute"][k1] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k3 in data_i[j]["Operation"]) {
+                                        strVal += data_i[j]["Operation"][k3] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k5 in data_i[j]["Database"]) {
+                                        //console.log(data_i[j]["Attribute"][k]);
+                                        trVal += data_i[j]["Database"][k5] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k7 in data_i[j]["Testcases"]) {
+                                        //console.log(data_i[j]["Attribute"][k]);
+                                        trVal += data_i[j]["Testcases"][k] + "<br>";
+                                    }
+                                    trVal += "</td>";
+                                } else {
+                                    trVal += "<tr><td>" + data_i[j]["name"] + "</td>";
+                                    trVal += "<td>";
+                                    for (k2 in data_i[j]["Attribute"]) {
+                                        trVal += data_i[j]["Attribute"][k2] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k4 in data_i[j]["Operation"]) {
+                                        trVal += data_i[j]["Operation"][k4] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k6 in data_i[j]["Database"]) {
+                                        //console.log(data_i[j]["Attribute"][k]);
+                                        trVal += data_i[j]["Database"][k6] + "<br>";
+                                    }
+                                    trVal += "</td><td>";
+                                    for (k8 in data_i[j]["Testcases"]) {
+                                        //console.log(data_i[j]["Attribute"][k]);
+                                        trVal += data_i[j]["Testcases"][k8] + "<br>";
+                                    }
+                                    trVal += "</td></tr>"
+                                }
+                            }
+                            trVal += "</tr>";
+
+                            $("#flatTable").append(trVal);
+                            $("#divImpactTable").show();
+                        }
+                    }
+
+                }
+            })).done(function() {});
+
+    }
+
+    // Create class in diagram
+    function createClassInBackground() {
+        myDiagram.startTransaction('new node');
+        var loc = myDiagram.lastInput.documentPoint;
+        var locx = loc["x"];
+        var locy = loc["y"];
+        loc = locx + " " + locy;
+        var data = {
+            "category": "UndesiredEvent",
+            "loc": loc,
+            "text": "Class",
+            "color": "lightyellow"
+        }
+        myDiagram.model.addNodeData(data);
+        myDiagram.commitTransaction('new node');
+    }
+
+    // Create interface in diagram
+    function createInterfaceInBackground() {
+        myDiagram.startTransaction('new node');
+        var loc = myDiagram.lastInput.documentPoint;
+        var locx = loc["x"];
+        var locy = loc["y"];
+        loc = locx + " " + locy;
+        var data = {
+            "category": "UndesiredEvent",
+            "loc": loc,
+            "text": "<<Interface>>\nName",
+            "color": "white"
+        }
+        myDiagram.model.addNodeData(data);
+        myDiagram.commitTransaction('new node');
+    }
+
+    jQuery('body').bind('focusin focus', function(e) {
+        e.preventDefault();
+    })
+    </script>
+</head>
+<div style="font-size:25px">Visual map</div>
+<div class="line-separator"></div>
+
+<body onload="init()" style="background-color: #eee;width:100%">
+    <div id="sample">
+        <div style="width:100%; white-space:nowrap;">
+            <span style="display: inline-block; vertical-align: top; width:10%">
+                <toolbox-ng></toolbox-ng>
+            </span>
+            <span style="display: inline-block; vertical-align: top; width:74%">
+                <div id="myDiagramDiv" style="border: solid 1px black; height: 680px; background-color: white"></div>
+            </span>
+            <span style="display: inline-block; vertical-align: top; width:16%">
+                <test-case-ng></test-case-ng>
+                <div style="border: solid 1px black; background-color: #eee">
+                    <div style="background-color: #eeeeee;font-weight: bold;padding:5px 5px 5px 5px">-Database-
+                    </div>
+                    <div id="listofdatabases"; style="font-size: 12px; white-space: nowrap; overflow: hidden; margin: 5px 5px 5px 5px;height: 290px">
+                    </div>
+                </div>
+            </span>
+        </div>
+    </div>
+    <!-- Impact table-->
+    <impact-table-ng></impact-table-ng>
+    <!--  Upload form -->
+    <upload-ng></upload-ng>
+    <!-- Edit relationship form -->
+    <manage-database-ng></manage-database-ng>
+    <!-- Manage component view -->
+    <manage-component-view-ng></manage-component-view-ng>
+    <!-- Manage test cases view-->
+    <manage-test-case-view-ng></manage-test-case-view-ng>
+    <!-- Manage classes-->
+    <manage-class-view-ng></manage-class-view-ng>
+    <!-- Manage requirements-->
+    <manage-req-view-ng></manage-req-view-ng>
+</body>
+<div id="loading" class="se-pre-con"></div>
+
+</html>
