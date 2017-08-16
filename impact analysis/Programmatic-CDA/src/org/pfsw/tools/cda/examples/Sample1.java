@@ -78,7 +78,8 @@ public class Sample1 {
 
 		CommandLineArguments commandArgs;
 		commandArgs = new CommandLineArguments(args);
-		String dir = commandArgs.getArgumentValue("-d");
+		String dir = commandArgs.getArgumentValue("-s");
+		String dest =  commandArgs.getArgumentValue("-d");
 		Map<String, HashMap<String, ArrayList<String>>> arr = new HashMap<String, HashMap<String, ArrayList<String>>>();
 
 		JarFile jarFile = new JarFile(dir);
@@ -139,7 +140,7 @@ public class Sample1 {
 
 		inst = new Sample1();
 
-		inst.run(commandArgs, arr, dir);
+		inst.run(commandArgs, arr, dir, dest);
 		System.err.flush();
 		System.out.flush();
 		SysUtil.current().exit(0, 100);
@@ -175,7 +176,7 @@ public class Sample1 {
 	 */
 
 	protected void run(CommandLineArguments commandArgs, Map<String, HashMap<String, ArrayList<String>>> arr,
-			String dir) throws IOException {
+			String dir, String dest) throws IOException {
 		Workset workset;
 		String sample;
 		Set<String> packageNameSet = new HashSet<String>();
@@ -331,7 +332,7 @@ public class Sample1 {
 		obj.put("nodeDataArray", nodeArray);
 		obj.put("linkDataArray", linkArray);
 
-		try (FileWriter file = new FileWriter("views/json/tmp.json")) {
+		try (FileWriter file = new FileWriter(dest)) {
 
 			file.write(obj.toString());
 			file.flush();
@@ -340,7 +341,7 @@ public class Sample1 {
 			e.printStackTrace();
 		}
 		
-		try (FileWriter file = new FileWriter("views/json/tmp.json")) {
+		try (FileWriter file = new FileWriter(dest)) {
 
 			file.write(obj.toString());
 			file.flush();
