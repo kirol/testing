@@ -196,7 +196,7 @@ public class Sample1 {
 		/*this.createDefaultComponentViewFile();*/
 		
 		List<String> listAllPackages = new ArrayList<String>();
-		listAllPackages = this.listAllPackages(workset);
+		listAllPackages = this.listAllPackages(workset, dest);
 		System.out.println(listAllPackages);
 		for(String packageName : listAllPackages){
 			
@@ -332,7 +332,7 @@ public class Sample1 {
 		obj.put("nodeDataArray", nodeArray);
 		obj.put("linkDataArray", linkArray);
 
-		try (FileWriter file = new FileWriter(dest)) {
+		try (FileWriter file = new FileWriter(dest + "importedjarclassview.json")) {
 
 			file.write(obj.toString());
 			file.flush();
@@ -341,17 +341,9 @@ public class Sample1 {
 			e.printStackTrace();
 		}
 		
-		try (FileWriter file = new FileWriter(dest)) {
-
-			file.write(obj.toString());
-			file.flush();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 		
-		
+		// Create report file
 		this.createHtmlFile(htmlString1);
 
 	}
@@ -376,7 +368,7 @@ public class Sample1 {
 	
 	
 	// List of packages contained in uploaded file
-	protected List<String> listAllPackages(Workset workset) {
+	protected List<String> listAllPackages(Workset workset, String dest) {
 		
 		List<String> list1 = new ArrayList<String>();
 		GenericClassContainer[] listOfClassContainers = workset.getClassContainers();
@@ -391,6 +383,11 @@ public class Sample1 {
 			ClassPackage[] listOfPackages = classContainer.getPackages();
 			for(ClassPackage classPackage : listOfPackages){
 				String classPackageName = classPackage.getName();
+				
+				// In case of empty package name, we name it unamed package
+				if(classPackageName.equals("")){
+					classPackageName = "unamed package";
+				}
 				
 				JSONObject obj1 = new JSONObject();
 				obj1.put("category", "UndesiredEvent");
@@ -418,7 +415,7 @@ public class Sample1 {
 		obj.put("linkDataArray", linkArray);
 		System.out.print(obj);
 		
-		try (FileWriter file = new FileWriter("views/json/packageview.json")) {
+		try (FileWriter file = new FileWriter(dest + "importedjarpackageview.json")) {
 
 			file.write(obj.toString());
 			file.flush();
