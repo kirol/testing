@@ -1,0 +1,145 @@
+1. Which following is an advantage of having the whole team responsible for quality?
+    	a. Test automation tasks are now the responsibility of the development team instead of the test team.
+	b. Testers will work closely with both developers and business representatives to deciding on test automation approaches
+	c. Enabling the various skill sets within the team to be leveraged to the benefit of the project.
+	d. Tester work with developers to agree on the testing strategy and create suitable acceptance tests
+
+2. Which of the following is the incorrect pairing according to the Agile Manifesto statement of values?
+	a. Individuals and interactions over processes and tools
+	b. Customer collaboration over contract negotiation
+	c. Comprehensive documentation over working software
+	d. Responding to change over following a plan
+	
+3. What type of Agile approach are you following?
+	a. Extreme Programming
+	b. Task Board
+	c. V-Model
+	d. Interation.
+
+4. In Agile development, user stories are written to capture requirements from the perspectives of developers, testers, and business representatives. 
+   Which following is 3C techniques : 
+   a. Confirmation explains how the software will be used.
+   b. Confirmation include accecptance criteria.
+   c. Determine where change requirements will be required to keep the project on schedule
+   d. Update the requirements document and require customer sign-off before implementing any changes
+
+5. Which of the following BEST describes a tester participating in a retrospective meeting?
+	a. Not only forcus individual improvement, but also focus on whole team improvement.
+	b. Forcus individual improvement, but not focus on whole team improvement.
+	c. Should not forcus individual improvement, but focus on whole team improvement.
+	d. Bring in topics that are related to testing.
+
+6. What difference between Agile Tester and traditional model?
+	a. Automation test on uinit test
+	b. Automation test on system accecptance test.
+	c. Automation test on regression testing	
+	d. Automation test all level.
+
+7. In a typical Agile project, it is a common practice to avoid producing vast amounts of documentation. Instead, focus is more on having working software:
+	Which of the following is the correct to the Agile ?
+	a. Development include manual document.
+	b. Development include automated tests.
+	c. Business-oriented  include automated unit tests. 
+	d. Business oriented include user story & accecptance criteria.
+
+8. The business advises during iteration 5 planning that they require changes to the system delivered in iteration 3. 
+  Of the following activities, which the correct?
+	a. Regression Test is review & update for Interation later.
+	b. Regression Test was not tested in previous iterations.
+	c. Manual regression testing would require from previous and current iterations.
+	d. Regression testing would require for manual.
+	
+9. Testers in Agile teams should:
+	a.
+	b. 
+	c.
+	d. Evaluate product quality, quality-oriented, working in with programmers
+
+10. Agile tester may encounter some test-related risks:
+	a. Cost is high and exepence.
+	b. Tester work so closely to developers that they lose the appropriate tester mindset.
+	c. 
+	d. The Agile tester may have relationship issues with the Agile team that is accustomed to working together.
+
+11. What is TDD?
+
+12. Why using Test Pyramid?
+	a.
+	b. 
+	c. It show number of tests at the levels.
+	d. Invoke early testing
+
+13. Which testing technical is associated with automation?
+	a. User Acceptance Testing
+	b. Reliability Testing
+	c. Unit Testing
+	d. Usability Testing
+	
+14. Which testing technical is associated business facing and critique/support for Product/team?
+	a. Exploratory Testing
+	b. Functional Testing.
+	c. Intergration Testing
+	d. Performace Testing.
+	
+15. The tester collaborates with the team on the following activities during Sprint 0:
+	a. Defining testable user stories, including acceptance criteria, addressing test scope.
+	b. Create an initial test strategy and define when stop testing.
+	c. Estimating testing effort associated with the user stories
+	d. Estimating testing effort for all testing tasks
+	
+16. Estimating Testing Effort Based on: 	
+	a. Base user story that is review, impact, risk analys.
+	b. Base on Fibonacci sequence. 
+	c. Base on the number of story points.
+	d. Base on the size of the story.
+	
+17. As a tester, which technique is selected to test an income tax calculation system: 
+	a. Equivalence Partitioning (EP)
+	b. Boundary Value Analysis (BVA)
+	c. Decision Table.
+	d. State transition testing.
+	
+18. What is a charter?	
+	a. Charter to help guide current test.
+	b. Charter is result from previous.
+	c. Charter to help guide next test.
+	d. Charter is result from current session.
+
+19. Testing task is visible on: 	
+	a. Burndown chart.
+	b. Kanban
+	c. White board.
+	d. Report
+
+20. User want to copy a file from desktop to Cloud. Which test case is incorrect? 
+	a. Copy a file from a Desktop folder to an empty Cloud folder.
+	b. Copy a exsting file from a Desktop folder to a Cloud folder.
+	c. Copy a file from a Cloud folder to a Desktop folder.
+	d. Copy a file from a Desktop folder to a Desktop folder
+
+21. Code is check-in minimum:
+	a. As soon as
+	b. Immediately after a new build is deployed.
+	c. Daily
+	d. Weekly
+	
+24.	
+	a.
+	b.
+	c.
+	d.
+25.	
+	a.
+	b.
+	c.
+	d.
+26.	
+	a.
+	b.c.
+	d.
+	
+	
+
+	
+	
+   
